@@ -22,10 +22,12 @@ class WSResponseTests(unittest.TestCase):
         self.assertEqual(123, ws_response.value_attributes["test"])
         self.assertEqual(1, len(ws_response.value_attributes))
 
-    def test_all_is_match(self):
-        ws_response = (WSResponse()
-                       .with_attribute_value("type", "new_request")
-                       .with_attribute("body"))
+    def test_all_attributes_is_match(self):
+        ws_response = (
+            WSResponse()
+            .with_attribute_value("type", "new_request")
+            .with_attribute("body")
+        )
 
         test_data = {
             "type": "new_request",
@@ -34,10 +36,12 @@ class WSResponseTests(unittest.TestCase):
 
         self.assertTrue(ws_response.is_match(test_data))
 
-    def test_attribute_value_is_match(self):
-        ws_response = (WSResponse()
-                       .with_attribute_value("type", "new_request")
-                       .with_attribute("body"))
+    def test_attribute_is_not_match(self):
+        ws_response = (
+            WSResponse()
+            .with_attribute_value("type", "new_request")
+            .with_attribute("body")
+        )
 
         test_data = {
             "type": "new_request",
@@ -46,10 +50,12 @@ class WSResponseTests(unittest.TestCase):
 
         self.assertFalse(ws_response.is_match(test_data))
 
-    def test_attribute_is_match(self):
-        ws_response = (WSResponse()
-                       .with_attribute_value("type", "new_request")
-                       .with_attribute("body"))
+    def test_attribute_value_is_not_match(self):
+        ws_response = (
+            WSResponse()
+            .with_attribute_value("type", "new_request")
+            .with_attribute("body")
+        )
 
         test_data = {
             "not_type": "new_request",
@@ -58,10 +64,12 @@ class WSResponseTests(unittest.TestCase):
 
         self.assertFalse(ws_response.is_match(test_data))
 
-    def test_none_is_match(self):
-        ws_response = (WSResponse()
-                       .with_attribute_value("type", "new_request")
-                       .with_attribute("body"))
+    def test_no_attributes_match(self):
+        ws_response = (
+            WSResponse()
+            .with_attribute_value("type", "new_request")
+            .with_attribute("body")
+        )
 
         test_data = {
             "not_type": "new_request",
