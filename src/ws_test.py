@@ -1,6 +1,6 @@
-import asyncio
-import websockets
 import ssl
+import websockets
+
 
 class WSTest:
 
@@ -23,4 +23,4 @@ class WSTest:
             connection_string += "?"
         for key in self.query_parameters:
             connection_string += str(key) + "=" + str(self.query_parameters[key]) + "&"
-        return connection_string.strip("&") 
+        return connection_string.strip("&")
