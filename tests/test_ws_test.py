@@ -1,8 +1,7 @@
+import asyncio
 import unittest
 from unittest.mock import patch, MagicMock
 from src.ws_test import WSTest
-import asyncio
-from asgiref.sync import async_to_sync
 
 
 def syncify(coro):
@@ -13,7 +12,6 @@ def syncify(coro):
 
 
 class WSTestTests(unittest.TestCase):
-
 
     def test_create_ws_test_with_uri(self):
         uri = "wss://example.com"
@@ -59,9 +57,11 @@ class WSTestTests(unittest.TestCase):
     @syncify
     async def test_websocket_connect_with_parameters(self, mock_ssl, mock_websockets):
         uri = "wss://example.com"
-        ws_tester = (WSTest(uri)
+        ws_tester = (
+            WSTest(uri)
             .with_query_parameter("example", 123)
-            .with_query_parameter("test", 456))
+            .with_query_parameter("test", 456)
+        )
 
         mock_socket = MagicMock()
         mock_socket.close = MagicMock(return_value=asyncio.Future())
@@ -79,9 +79,3 @@ class WSTestTests(unittest.TestCase):
 
         mock_websockets.connect.assert_called_once_with(expected_uri, ssl=ssl_context)
         mock_socket.close.assert_called_once()
-
-
-
-
-
-        
