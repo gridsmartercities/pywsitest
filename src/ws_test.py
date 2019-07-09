@@ -19,16 +19,8 @@ class WSTest:
 
     def _get_connection_string(self):
         connection_string = self.uri
-        counter = 0
+        if self.query_parameters:
+            connection_string += "?"
         for key in self.query_parameters:
-            value = self.query_parameters[key]
-            if counter == 0:
-                connection_string += "?"
-            else:
-                connection_string += "&"
-            connection_string = connection_string + str(key) + "=" + str(value)
-            counter+=1
-
-        return connection_string
-
-        
+            connection_string += str(key) + "=" + str(self.query_parameters[key]) + "&"
+        return connection_string.strip("&") 
