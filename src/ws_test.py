@@ -10,6 +10,7 @@ class WSTest:
 
     def with_query_parameter(self, key, value):
         self.query_parameters[key] = value
+        return self
 
     async def run(self):
         websocket = await websockets.connect(self._get_connection_string(), ssl=ssl.SSLContext())
