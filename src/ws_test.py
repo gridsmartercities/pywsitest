@@ -9,14 +9,14 @@ class WSTest:
 
     def __init__(self, uri):
         self.uri = uri
-        self.query_parameters = {}
+        self.parameters = {}
         self.expected_responses = []
-        self.actual_responses = []
         self.received_responses = []
+        self.received_json = []
         self.response_timeout = 10.0
 
     def with_parameter(self, key, value):
-        self.query_parameters[key] = value
+        self.parameters[key] = value
         return self
 
     def with_response(self, response: WSResponse):
@@ -40,12 +40,12 @@ class WSTest:
             self._receive_handler(response)
 
     def _receive_handler(self, response):
-        self.received_responses.append(response)
+        self.received_json.append(response)
         parsed_response = json.loads(response)
 
         for expected_response in self.expected_responses:
             if expected_response.is_match(parsed_response):
-                self.actual_responses.append(expected_response)
+                self.received_responses.append(expected_response)
                 self.expected_responses.remove(expected_response)
                 break
 
@@ -54,10 +54,10 @@ class WSTest:
 
     def _get_connection_string(self):
         connection_string = self.uri
-        if self.query_parameters:
+        if self.parameters:
             connection_string += "?"
-        for key in self.query_parameters:
-            connection_string += str(key) + "=" + str(self.query_parameters[key]) + "&"
+        for key in self.parameters:
+            connection_string += str(key) + "=" + str(self.parameters[key]) + "&"
         return connection_string.strip("&")
 
     def is_complete(self):
