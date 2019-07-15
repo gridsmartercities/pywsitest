@@ -9,7 +9,9 @@ from src.ws_response import WSResponse
 def syncify(coro):
     def wrapper(*args, **kwargs):
         loop = asyncio.new_event_loop()
-        return loop.run_until_complete(coro(*args, **kwargs))
+        response = loop.run_until_complete(coro(*args, **kwargs))
+        loop.close()
+        return response
     return wrapper
 
 
@@ -159,3 +161,33 @@ class WSTestTests(unittest.TestCase):
 
         self.assertTrue(ws_tester.received_responses)
         self.assertFalse(ws_tester.actual_responses)
+
+    @patch("src.ws_test.websockets")
+    @patch("ssl.SSLContext")
+    @syncify
+    async def test_websocket_response_timeout(self, mock_ssl, mock_websockets):
+        response = WSResponse().with_attribute("body")
+
+        ws_tester = (
+            WSTest("wss://example.com")
+            .with_parameter("example", 123)
+            .with_response_timeout(0.1)
+            .with_response(response)
+        )
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        mock_socket.recv = MagicMock(return_value=asyncio.Future())
+
+        mock_websockets.connect = MagicMock(return_value=asyncio.Future())
+        mock_websockets.connect.return_value.set_result(mock_socket)
+
+        ssl_context = MagicMock()
+        mock_ssl.return_value = ssl_context
+
+        self.assertEqual(ws_tester.response_timeout, 0.1)
+        with self.assertRaises(asyncio.TimeoutError):
+            await ws_tester.run()
+        mock_socket.close.assert_called_once()

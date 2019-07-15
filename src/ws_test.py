@@ -13,6 +13,7 @@ class WSTest:
         self.expected_responses = []
         self.actual_responses = []
         self.received_responses = []
+        self.response_timeout = 10.0
 
     def with_parameter(self, key, value):
         self.query_parameters[key] = value
@@ -22,14 +23,20 @@ class WSTest:
         self.expected_responses.append(response)
         return self
 
+    def with_response_timeout(self, timeout):
+        self.response_timeout = timeout
+        return self
+
     async def run(self):
         websocket = await websockets.connect(self._get_connection_string(), ssl=ssl.SSLContext())
-        await self._receive(websocket)
-        await websocket.close()
+        try:
+            await self._receive(websocket)
+        finally:
+            await websocket.close()
 
     async def _receive(self, websocket):
         while self.expected_responses:
-            response = await asyncio.wait_for(websocket.recv(), timeout=10)
+            response = await asyncio.wait_for(websocket.recv(), timeout=self.response_timeout)
             self._receive_handler(response)
 
     def _receive_handler(self, response):
