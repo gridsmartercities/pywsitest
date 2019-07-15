@@ -2,6 +2,7 @@ import asyncio
 import unittest
 from unittest.mock import patch, MagicMock
 from src.ws_test import WSTest
+from src.ws_response import WSResponse
 
 
 def syncify(coro):
@@ -72,3 +73,10 @@ class WSTestTests(unittest.TestCase):
 
         mock_websockets.connect.assert_called_once_with(expected_uri, ssl=ssl_context)
         mock_socket.close.assert_called_once()
+
+    def test_websocket_with_expected_response(self):
+        response = WSResponse().with_attribute("type")
+        ws_tester = WSTest("wss://example.com").with_response(response)
+
+        self.assertTrue(ws_tester.expected_responses)
+        self.assertEqual(response, ws_tester.expected_responses[0])
