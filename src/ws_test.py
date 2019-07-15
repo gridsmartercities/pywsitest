@@ -10,7 +10,7 @@ class WSTest:
         self.query_parameters = {}
         self.expected_responses = []
 
-    def with_query_parameter(self, key, value):
+    def with_parameter(self, key, value):
         self.query_parameters[key] = value
         return self
 

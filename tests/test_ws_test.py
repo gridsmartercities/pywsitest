@@ -21,7 +21,7 @@ class WSTestTests(unittest.TestCase):
     def test_add_key_value_query_parameter(self):
         ws_tester = (
             WSTest("wss://example.com")
-            .with_query_parameter("example", 123)
+            .with_parameter("example", 123)
         )
 
         self.assertEqual(123, ws_tester.query_parameters["example"])
@@ -53,8 +53,8 @@ class WSTestTests(unittest.TestCase):
     async def test_websocket_connect_with_parameters(self, mock_ssl, mock_websockets):
         ws_tester = (
             WSTest("wss://example.com")
-            .with_query_parameter("example", 123)
-            .with_query_parameter("test", 456)
+            .with_parameter("example", 123)
+            .with_parameter("test", 456)
         )
 
         mock_socket = MagicMock()

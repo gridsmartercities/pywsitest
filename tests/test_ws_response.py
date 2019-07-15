@@ -16,8 +16,8 @@ class WSResponseTests(unittest.TestCase):
         self.assertIn("test", ws_response.attributes)
         self.assertEqual(1, len(ws_response.attributes))
 
-    def test_with_attribute_value(self):
-        ws_response = WSResponse().with_attribute_value("test", 123)
+    def test_with_attribute_with_value(self):
+        ws_response = WSResponse().with_attribute("test", 123)
 
         self.assertEqual(123, ws_response.value_attributes["test"])
         self.assertEqual(1, len(ws_response.value_attributes))
@@ -25,7 +25,7 @@ class WSResponseTests(unittest.TestCase):
     def test_all_attributes_is_match(self):
         ws_response = (
             WSResponse()
-            .with_attribute_value("type", "new_request")
+            .with_attribute("type", "new_request")
             .with_attribute("body")
         )
 
@@ -39,7 +39,7 @@ class WSResponseTests(unittest.TestCase):
     def test_attribute_is_not_match(self):
         ws_response = (
             WSResponse()
-            .with_attribute_value("type", "new_request")
+            .with_attribute("type", "new_request")
             .with_attribute("body")
         )
 
@@ -53,7 +53,7 @@ class WSResponseTests(unittest.TestCase):
     def test_attribute_value_is_not_match(self):
         ws_response = (
             WSResponse()
-            .with_attribute_value("type", "new_request")
+            .with_attribute("type", "new_request")
             .with_attribute("body")
         )
 
@@ -67,7 +67,7 @@ class WSResponseTests(unittest.TestCase):
     def test_no_attributes_match(self):
         ws_response = (
             WSResponse()
-            .with_attribute_value("type", "new_request")
+            .with_attribute("type", "new_request")
             .with_attribute("body")
         )
 
