@@ -4,12 +4,11 @@ class WSResponse:
         self.attributes = []
         self.value_attributes = {}
 
-    def with_attribute(self, attribute):
-        self.attributes.append(attribute)
-        return self
-
-    def with_attribute_value(self, attribute, value):
-        self.value_attributes[attribute] = value
+    def with_attribute(self, attribute, value=None):
+        if value:
+            self.value_attributes[attribute] = value
+        else:
+            self.attributes.append(attribute)
         return self
 
     def is_match(self, response):
