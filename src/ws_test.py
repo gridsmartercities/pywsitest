@@ -14,6 +14,7 @@ class WSTest:
         self.received_responses = []
         self.received_json = []
         self.response_timeout = 10.0
+        self.test_timeout = 60.0
 
     def with_parameter(self, key, value):
         self.parameters[key] = value
@@ -27,10 +28,14 @@ class WSTest:
         self.response_timeout = timeout
         return self
 
+    def with_test_timeout(self, timeout):
+        self.test_timeout = timeout
+        return self
+
     async def run(self):
         websocket = await websockets.connect(self._get_connection_string(), ssl=ssl.SSLContext())
         try:
-            await self._receive(websocket)
+            await asyncio.wait_for(self._receive(websocket), timeout=self.test_timeout)
         finally:
             await websocket.close()
 
