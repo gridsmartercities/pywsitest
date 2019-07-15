@@ -24,24 +24,25 @@ class WSTest:
 
     async def run(self):
         websocket = await websockets.connect(self._get_connection_string(), ssl=ssl.SSLContext())
-        await self.receive(websocket)
+        await self._receive(websocket)
         await websocket.close()
 
-    async def receive(self, websocket):
+    async def _receive(self, websocket):
         while self.expected_responses:
             response = await asyncio.wait_for(websocket.recv(), timeout=10)
-            self.receive_handler(response)
+            self._receive_handler(response)
 
-    def receive_handler(self, response):
-        parsed_response = json.loads(response)
+    def _receive_handler(self, response):
         self.received_responses.append(response)
+        parsed_response = json.loads(response)
+
         for expected_response in self.expected_responses:
             if expected_response.is_match(parsed_response):
                 self.actual_responses.append(expected_response)
                 self.expected_responses.remove(expected_response)
                 break
 
-    # async def send(self, websocket):
+    # async def _send(self, websocket):
     #     pass
 
     def _get_connection_string(self):

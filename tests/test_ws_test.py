@@ -115,7 +115,7 @@ class WSTestTests(unittest.TestCase):
         self.assertEqual(response_json, ws_tester.received_responses[0])
         self.assertTrue(ws_tester.is_complete())
         mock_socket.close.assert_called_once()
-    
+
     @patch("src.ws_test.websockets")
     @patch("ssl.SSLContext")
     @syncify
@@ -149,5 +149,13 @@ class WSTestTests(unittest.TestCase):
         await ws_tester.run()
 
         self.assertEqual(2, len(ws_tester.received_responses))
+        self.assertEqual(2, len(ws_tester.actual_responses))
         self.assertTrue(ws_tester.is_complete())
         mock_socket.close.assert_called_once()
+
+    def test_websocket_receive_when_no_expected_responses(self):
+        ws_tester = WSTest("wss://example.com")
+        ws_tester._receive_handler(json.dumps({"body": {}}))  # noqa: pylint - protected-access
+
+        self.assertTrue(ws_tester.received_responses)
+        self.assertFalse(ws_tester.actual_responses)
