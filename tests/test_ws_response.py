@@ -7,8 +7,7 @@ class WSResponseTests(unittest.TestCase):
     def test_create_ws_response(self):
         ws_response = WSResponse()
 
-        self.assertListEqual([], ws_response.attributes)
-        self.assertDictEqual({}, ws_response.value_attributes)
+        self.assertDictEqual({}, ws_response.attributes)
 
     def test_with_attribute(self):
         ws_response = WSResponse().with_attribute("test")
@@ -19,8 +18,8 @@ class WSResponseTests(unittest.TestCase):
     def test_with_attribute_with_value(self):
         ws_response = WSResponse().with_attribute("test", 123)
 
-        self.assertEqual(123, ws_response.value_attributes["test"])
-        self.assertEqual(1, len(ws_response.value_attributes))
+        self.assertEqual(123, ws_response.attributes["test"])
+        self.assertEqual(1, len(ws_response.attributes))
 
     def test_all_attributes_is_match(self):
         ws_response = (
@@ -58,7 +57,7 @@ class WSResponseTests(unittest.TestCase):
         )
 
         test_data = {
-            "not_type": "new_request",
+            "type": "not_new_request",
             "body": {}
         }
 
