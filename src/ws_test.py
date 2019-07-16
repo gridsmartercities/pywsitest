@@ -23,14 +23,22 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         test_timeout (float)
 
     Methods:
-        with_parameter
-        with_response
-        with_message
-        with_response_timeout
-        with_message_timeout
-        with_test_timeout
-        run
-        is_complete
+        with_parameter(key, value):
+            Adds a parameter and returns the WSTest
+        with_response(response: WSResponse):
+            Adds an expected response and returns the WSTest
+        with_message(message: WSMessage):
+            Adds a message to send and returns the WSTest
+        with_response_timeout(timeout: float):
+            Sets the response timeout in seconds and returns the WSTest
+        with_message_timeout(timeout: float):
+            Sets the message timeout in seconds and returns the WSTest
+        with_test_timeout(timeout: float):
+            Sets the overall test timeout in seconds and returns the WSTest
+        async run():
+            Runs the websocket tester with the current configuration
+        is_complete():
+            Checks whether the test has completed and returns the result as a bool
 
     Usage:
         ws_tester = (
@@ -135,4 +143,4 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         return connection_string.strip("&")
 
     def is_complete(self):
-        return not self.expected_responses
+        return not self.expected_responses and not self.messages
