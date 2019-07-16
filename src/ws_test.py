@@ -69,16 +69,16 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
                 self.expected_responses.remove(expected_response)
 
                 for message in expected_response.triggers:
-                    await self.send_handler(websocket, message)
+                    await self._send_handler(websocket, message)
 
                 break
 
     async def _send(self, websocket):
         while self.messages:
             message = self.messages.pop(0)
-            await self.send_handler(websocket, message)
+            await self._send_handler(websocket, message)
 
-    async def send_handler(self, websocket, message):
+    async def _send_handler(self, websocket, message):
         await asyncio.wait_for(websocket.send(str(message)), timeout=self.message_timeout)
         self.sent_messages.append(message)
 

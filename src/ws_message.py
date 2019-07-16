@@ -2,6 +2,7 @@ import json
 
 
 class WSMessage:
+
     def __init__(self):
         self.attributes = {}
 
