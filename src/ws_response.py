@@ -35,7 +35,6 @@ class WSResponse:
     def with_attribute(self, attribute, value=None):
         """
         Adds a key/value pair to the attributes dictionary
-        Returns the WSResponse instance
 
         Parameters:
             key (obj): The key of the attribute
@@ -50,7 +49,6 @@ class WSResponse:
     def with_trigger(self, message: WSMessage):
         """
         Adds a trigger to the triggers list
-        Returns the WSResponse instance
 
         Parameters:
             message (WSMessage): The message object to send to the websocket
@@ -64,7 +62,6 @@ class WSResponse:
     def is_match(self, response: dict):
         """
         Checks if this WSResponse instance matches an input response by checking all attributes are present
-        Returns the result as a bool
 
         Parameters:
             response (dict): The response to check against for a match

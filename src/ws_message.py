@@ -29,7 +29,6 @@ class WSMessage:
     def with_attribute(self, key, value):
         """
         Adds a key/value pair to the attributes dictionary
-        Returns the WSMessage instance
 
         Parameters:
             key (obj): The key of the attribute

@@ -80,7 +80,6 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         """
         Adds a key/value pair to the parameters dictionary
         Parameters are query parameters used to connect to the websocket
-        Returns the WSTest instance
 
         Parameters:
             key (obj): The key of the parameter
@@ -95,7 +94,6 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     def with_response(self, response: WSResponse):
         """
         Adds a response to the expected responses list
-        Returns the WSTest instance
 
         Parameters:
             response (WSResponse): An expected response
@@ -109,7 +107,6 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     def with_message(self, message: WSMessage):
         """
         Adds a message to the messages list
-        Returns the WSTest instance
 
         Parameters:
             message (WSMessage): A message to send to the websocket
@@ -123,16 +120,12 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     def with_response_timeout(self, timeout: float):
         """
         Sets the response timeout in seconds
-        Returns the WSTest instance
 
         Parameters:
             timeout (float): The time to wait for a response in seconds
 
         Returns:
             (WSTest): The WSTest instance with_response_timeout was called on
-
-        Raises:
-            asyncio.TimeoutError: If no response is received within the time limit
         """
         self.response_timeout = timeout
         return self
@@ -140,16 +133,12 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     def with_message_timeout(self, timeout: float):
         """
         Sets the message timeout in seconds
-        Returns the WSTest instance
 
         Parameters:
             timeout (float): The time to wait for a message to send in seconds
 
         Returns:
             (WSTest): The WSTest instance with_message_timeout was called on
-
-        Raises:
-            asyncio.TimeoutError: If the message fails to send within the time limit
         """
         self.message_timeout = timeout
         return self
@@ -157,21 +146,25 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     def with_test_timeout(self, timeout: float):
         """
         Sets the test timeout in seconds
-        Returns the WSTest instance
 
         Parameters:
             timeout (float): The time to wait for the test to finish in seconds
 
         Returns:
             (WSTest): The WSTest instance with_test_timeout was called on
-
-        Raises:
-            asyncio.TimeoutError: If the test fails to finish within the time limit
         """
         self.test_timeout = timeout
         return self
 
     async def run(self):
+        """
+        Runs the integration tests
+        Sends any messages to the websocket
+        Receives any responses from the websocket
+
+        Raises:
+            asyncio.TimeoutError: If the test/sending/receiving fails to finish within the time limit
+        """
         websocket = await websockets.connect(self._get_connection_string(), ssl=ssl.SSLContext())
         try:
             await asyncio.wait_for(self._runner(websocket), timeout=self.test_timeout)
@@ -218,4 +211,10 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         return connection_string.strip("&")
 
     def is_complete(self):
+        """
+        Checks whether the test has finished running
+        
+        Returns:
+            (bool): Value to indicate whether the test has finished
+        """
         return not self.expected_responses and not self.messages
