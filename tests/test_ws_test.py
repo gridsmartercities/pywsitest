@@ -233,3 +233,33 @@ class WSTestTests(unittest.TestCase):
         with self.assertRaises(asyncio.TimeoutError):
             await ws_tester.run()
         mock_socket.close.assert_called_once()
+
+    @patch("src.ws_test.websockets")
+    @patch("ssl.SSLContext")
+    @syncify
+    async def test_websocket_test_send_single_message(self, mock_ssl, mock_websockets):
+        message = WSMessage().with_attribute("test", 123)
+        ws_tester = WSTest("wss://example.com").with_message(message)
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        future = asyncio.Future()
+        mock_socket.send = MagicMock(return_value=future)
+        future.set_result({})
+
+        mock_websockets.connect = MagicMock(return_value=asyncio.Future())
+        mock_websockets.connect.return_value.set_result(mock_socket)
+
+        ssl_context = MagicMock()
+        mock_ssl.return_value = ssl_context
+
+        expected_message = "{\"test\": 123}"
+
+        await ws_tester.run()
+
+        self.assertFalse(ws_tester.messages)
+        self.assertEqual(1, len(ws_tester.sent_messages))
+        mock_socket.send.assert_called_once_with(expected_message)
+        mock_socket.close.assert_called_once()

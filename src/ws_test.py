@@ -12,6 +12,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.uri = uri
         self.parameters = {}
         self.messages = []
+        self.sent_messages = []
         self.expected_responses = []
         self.received_responses = []
         self.received_json = []
@@ -41,9 +42,12 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     async def run(self):
         websocket = await websockets.connect(self._get_connection_string(), ssl=ssl.SSLContext())
         try:
-            await asyncio.wait_for(self._receive(websocket), timeout=self.test_timeout)
+            await asyncio.wait_for(self._runner(websocket), timeout=self.test_timeout)
         finally:
             await websocket.close()
+
+    async def _runner(self, websocket):
+        await asyncio.gather(self._receive(websocket), self._send(websocket))
 
     async def _receive(self, websocket):
         while self.expected_responses:
@@ -60,8 +64,14 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
                 self.expected_responses.remove(expected_response)
                 break
 
-    # async def _send(self, websocket):
-    #     pass
+    async def _send(self, websocket):
+        while self.messages:
+            message = self.messages.pop(0)
+            await self.send_handler(websocket, message)
+
+    async def send_handler(self, websocket, message):
+        await websocket.send(str(message))
+        self.sent_messages.append(message)
 
     def _get_connection_string(self):
         connection_string = self.uri
