@@ -167,6 +167,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         """
         websocket = await websockets.connect(self._get_connection_string(), ssl=ssl.SSLContext())
         try:
+            # Run the receive and send methods async with a timeout
             await asyncio.wait_for(self._runner(websocket), timeout=self.test_timeout)
         finally:
             await websocket.close()
@@ -175,6 +176,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         await asyncio.gather(self._receive(websocket), self._send(websocket))
 
     async def _receive(self, websocket):
+        # iterate while there are still expected responses that haven't been received yet
         while self.expected_responses:
             response = await asyncio.wait_for(websocket.recv(), timeout=self.response_timeout)
             await self._receive_handler(websocket, response)
@@ -203,6 +205,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.sent_messages.append(message)
 
     def _get_connection_string(self):
+        # wss://example.com?first=123&second=456
         connection_string = self.uri
         if self.parameters:
             connection_string += "?"
@@ -213,7 +216,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     def is_complete(self):
         """
         Checks whether the test has finished running
-        
+
         Returns:
             (bool): Value to indicate whether the test has finished
         """
