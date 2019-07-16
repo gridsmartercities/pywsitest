@@ -57,10 +57,14 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
 
         await ws_tester.run()
 
-        assertTrue(ws_tester.is_complete())
+        assert ws_tester.is_complete()
     """
 
     def __init__(self, uri):
+        """
+        Parameters:
+            uri (str): The uri of the websocket api
+        """
         self.uri = uri
         self.parameters = {}
         self.messages = []
@@ -73,26 +77,97 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.test_timeout = 60.0
 
     def with_parameter(self, key, value):
+        """
+        Adds a key/value pair to the parameters dictionary
+        Parameters are query parameters used to connect to the websocket
+        Returns the WSTest instance
+
+        Parameters:
+            key (obj): The key of the parameter
+            value (obj, optional): The value of the parameter
+
+        Returns:
+            (WSTest): The WSTest instance with_parameter was called on
+        """
         self.parameters[key] = value
         return self
 
     def with_response(self, response: WSResponse):
+        """
+        Adds a response to the expected responses list
+        Returns the WSTest instance
+
+        Parameters:
+            response (WSResponse): An expected response
+
+        Returns:
+            (WSTest): The WSTest instance with_response was called on
+        """
         self.expected_responses.append(response)
         return self
 
     def with_message(self, message: WSMessage):
+        """
+        Adds a message to the messages list
+        Returns the WSTest instance
+
+        Parameters:
+            message (WSMessage): A message to send to the websocket
+
+        Returns:
+            (WSTest): The WSTest instance with_message was called on
+        """
         self.messages.append(message)
         return self
 
     def with_response_timeout(self, timeout: float):
+        """
+        Sets the response timeout in seconds
+        Returns the WSTest instance
+
+        Parameters:
+            timeout (float): The time to wait for a response in seconds
+
+        Returns:
+            (WSTest): The WSTest instance with_response_timeout was called on
+
+        Raises:
+            asyncio.TimeoutError: If no response is received within the time limit
+        """
         self.response_timeout = timeout
         return self
 
     def with_message_timeout(self, timeout: float):
+        """
+        Sets the message timeout in seconds
+        Returns the WSTest instance
+
+        Parameters:
+            timeout (float): The time to wait for a message to send in seconds
+
+        Returns:
+            (WSTest): The WSTest instance with_message_timeout was called on
+
+        Raises:
+            asyncio.TimeoutError: If the message fails to send within the time limit
+        """
         self.message_timeout = timeout
         return self
 
     def with_test_timeout(self, timeout: float):
+        """
+        Sets the test timeout in seconds
+        Returns the WSTest instance
+
+        Parameters:
+            timeout (float): The time to wait for the test to finish in seconds
+
+        Returns:
+            (WSTest): The WSTest instance with_test_timeout was called on
+
+        Raises:
+            asyncio.TimeoutError: If the test fails to finish within the time limit
+        """
         self.test_timeout = timeout
         return self
 
