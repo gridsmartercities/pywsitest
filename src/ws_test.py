@@ -17,6 +17,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.received_responses = []
         self.received_json = []
         self.response_timeout = 10.0
+        self.message_timeout = 10.0
         self.test_timeout = 60.0
 
     def with_parameter(self, key, value):
@@ -31,11 +32,15 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.messages.append(message)
         return self
 
-    def with_response_timeout(self, timeout):
+    def with_response_timeout(self, timeout: float):
         self.response_timeout = timeout
         return self
 
-    def with_test_timeout(self, timeout):
+    def with_message_timeout(self, timeout: float):
+        self.message_timeout = timeout
+        return self
+
+    def with_test_timeout(self, timeout: float):
         self.test_timeout = timeout
         return self
 
@@ -74,7 +79,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             await self.send_handler(websocket, message)
 
     async def send_handler(self, websocket, message):
-        await websocket.send(str(message))
+        await asyncio.wait_for(websocket.send(str(message)), timeout=self.message_timeout)
         self.sent_messages.append(message)
 
     def _get_connection_string(self):
