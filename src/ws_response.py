@@ -1,10 +1,18 @@
+from src.ws_message import WSMessage
+
+
 class WSResponse:
 
     def __init__(self):
         self.attributes = {}
+        self.triggers = []
 
     def with_attribute(self, attribute, value=None):
         self.attributes[attribute] = value
+        return self
+
+    def with_trigger(self, message: WSMessage):
+        self.triggers.append(message)
         return self
 
     def is_match(self, response):
