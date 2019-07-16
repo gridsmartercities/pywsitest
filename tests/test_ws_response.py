@@ -1,5 +1,6 @@
 import unittest
 from src.ws_response import WSResponse
+from src.ws_message import WSMessage
 
 
 class WSResponseTests(unittest.TestCase):
@@ -76,3 +77,10 @@ class WSResponseTests(unittest.TestCase):
         }
 
         self.assertFalse(ws_response.is_match(test_data))
+
+    def test_with_trigger(self):
+        message = WSMessage().with_attribute("test", 123)
+        ws_response = WSResponse().with_trigger(message)
+
+        self.assertEqual(1, len(ws_response.triggers))
+        self.assertEqual(message, ws_response.triggers[0])

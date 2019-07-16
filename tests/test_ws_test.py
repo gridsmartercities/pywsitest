@@ -167,9 +167,11 @@ class WSTestTests(unittest.TestCase):
         self.assertTrue(ws_tester.is_complete())
         mock_socket.close.assert_called_once()
 
-    def test_websocket_receive_when_no_expected_responses(self):
+    @syncify
+    async def test_websocket_receive_when_no_expected_responses(self):
         ws_tester = WSTest("wss://example.com")
-        ws_tester._receive_handler(json.dumps({"body": {}}))  # noqa: pylint - protected-access
+        mock_socket = MagicMock()
+        await ws_tester._receive_handler(mock_socket, json.dumps({"body": {}}))  # noqa: pylint - protected-access
 
         self.assertTrue(ws_tester.received_json)
         self.assertFalse(ws_tester.received_responses)
@@ -255,11 +257,49 @@ class WSTestTests(unittest.TestCase):
         ssl_context = MagicMock()
         mock_ssl.return_value = ssl_context
 
-        expected_message = "{\"test\": 123}"
-
         await ws_tester.run()
 
         self.assertFalse(ws_tester.messages)
         self.assertEqual(1, len(ws_tester.sent_messages))
-        mock_socket.send.assert_called_once_with(expected_message)
+        mock_socket.send.assert_called_once_with("{\"test\": 123}")
+        mock_socket.close.assert_called_once()
+
+    @patch("src.ws_test.websockets")
+    @patch("ssl.SSLContext")
+    @syncify
+    async def test_websocket_test_receive_response_with_trigger(self, mock_ssl, mock_websockets):
+        ws_tester = (
+            WSTest("wss://example.com")
+            .with_response(
+                WSResponse()
+                .with_attribute("type")
+                .with_trigger(
+                    WSMessage()
+                    .with_attribute("test", 123)
+                )
+            )
+        )
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        send_future = asyncio.Future()
+        send_future.set_result({})
+        mock_socket.send = MagicMock(return_value=send_future)
+
+        receive_future = asyncio.Future()
+        receive_future.set_result(json.dumps({"type": {}}))
+        mock_socket.recv = MagicMock(side_effect=[receive_future, asyncio.Future()])
+
+        mock_websockets.connect = MagicMock(return_value=asyncio.Future())
+        mock_websockets.connect.return_value.set_result(mock_socket)
+
+        ssl_context = MagicMock()
+        mock_ssl.return_value = ssl_context
+
+        await ws_tester.run()
+
+        self.assertTrue(ws_tester.is_complete())
+        mock_socket.send.assert_called_once_with("{\"test\": 123}")
         mock_socket.close.assert_called_once()

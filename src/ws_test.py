@@ -52,9 +52,9 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     async def _receive(self, websocket):
         while self.expected_responses:
             response = await asyncio.wait_for(websocket.recv(), timeout=self.response_timeout)
-            self._receive_handler(response)
+            await self._receive_handler(websocket, response)
 
-    def _receive_handler(self, response):
+    async def _receive_handler(self, websocket, response):
         self.received_json.append(response)
         parsed_response = json.loads(response)
 
@@ -62,6 +62,10 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             if expected_response.is_match(parsed_response):
                 self.received_responses.append(expected_response)
                 self.expected_responses.remove(expected_response)
+
+                for message in expected_response.triggers:
+                    await self.send_handler(websocket, message)
+
                 break
 
     async def _send(self, websocket):
