@@ -7,6 +7,50 @@ from src.ws_message import WSMessage
 
 
 class WSTest:  # noqa: pylint - too-many-instance-attributes
+    """
+    A class representing a websocket test runner
+
+    Attributes:
+        uri (str)
+        parameters (dict)
+        messages (list)
+        sent_messages (list)
+        expected_responses (list)
+        received_responses (list)
+        received_json (list)
+        response_timeout (float)
+        message_timeout (float)
+        test_timeout (float)
+
+    Methods:
+        with_parameter
+        with_response
+        with_message
+        with_response_timeout
+        with_message_timeout
+        with_test_timeout
+        run
+        is_complete
+
+    Usage:
+        ws_tester = (
+            WSTest("wss://example.com")
+            .with_parameter("Authorization", "eyJh...")
+            .with_response(
+                WSResponse()
+            )
+            .with_response(
+                WSResponse()
+            )
+            .with_message(
+                WSMessage()
+            )
+        )
+
+        await ws_tester.run()
+
+        assertTrue(ws_tester.is_complete())
+    """
 
     def __init__(self, uri):
         self.uri = uri

@@ -16,6 +16,16 @@ class WSResponse:
             Adds a trigger and returns the WSResponse
         is_match(response: dict):
             Checks if this WSResponse instance matches an input response and returns the result as a bool
+
+    Usage:
+        response = (
+            WSResponse()
+            .with_attribute("type", "example")
+            .with_attribute("body")
+            .with_trigger(
+                WSMessage()
+            )
+        )
     """
 
     def __init__(self):
@@ -65,6 +75,7 @@ class WSResponse:
         for key in self.attributes:
             if key not in response:
                 return False
+            # Check attribute values only if value isn't none
             if self.attributes[key] is not None and response[key] != self.attributes[key]:
                 return False
         return True
