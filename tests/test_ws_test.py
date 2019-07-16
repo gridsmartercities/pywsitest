@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from src.ws_test import WSTest
 from src.ws_response import WSResponse
+from src.ws_message import WSMessage
 
 
 def syncify(coro):
@@ -28,6 +29,17 @@ class WSTestTests(unittest.TestCase):
         )
 
         self.assertEqual(123, ws_tester.parameters["example"])
+
+    def test_add_key_value_message(self):
+        message = WSMessage().with_attribute("test", 123)
+
+        ws_tester = (
+            WSTest("wss://example.com")
+            .with_message(message)
+        )
+
+        self.assertEqual(1, len(ws_tester.messages))
+        self.assertEqual(message, ws_tester.messages[0])
 
     @patch("src.ws_test.websockets")
     @patch("ssl.SSLContext")

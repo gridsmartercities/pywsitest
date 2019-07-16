@@ -3,13 +3,15 @@ import json
 import ssl
 import websockets
 from src.ws_response import WSResponse
+from src.ws_message import WSMessage
 
 
-class WSTest:
+class WSTest:  # noqa: pylint - too-many-instance-attributes
 
     def __init__(self, uri):
         self.uri = uri
         self.parameters = {}
+        self.messages = []
         self.expected_responses = []
         self.received_responses = []
         self.received_json = []
@@ -22,6 +24,10 @@ class WSTest:
 
     def with_response(self, response: WSResponse):
         self.expected_responses.append(response)
+        return self
+
+    def with_message(self, message: WSMessage):
+        self.messages.append(message)
         return self
 
     def with_response_timeout(self, timeout):
