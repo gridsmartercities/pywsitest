@@ -1,4 +1,4 @@
-from src.ws_message import WSMessage
+from .ws_message import WSMessage
 
 
 class WSResponse:

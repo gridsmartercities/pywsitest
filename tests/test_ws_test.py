@@ -2,16 +2,16 @@ import asyncio
 import json
 import unittest
 from unittest.mock import patch, MagicMock
-from src.ws_test import WSTest
-from src.ws_response import WSResponse
-from src.ws_message import WSMessage
+from pywsitest import WSTest, WSResponse, WSMessage
 
 
 def syncify(coro):
     def wrapper(*args, **kwargs):
         loop = asyncio.new_event_loop()
-        response = loop.run_until_complete(coro(*args, **kwargs))
-        loop.close()
+        try:
+            response = loop.run_until_complete(coro(*args, **kwargs))
+        finally:
+            loop.close()
         return response
     return wrapper
 
@@ -41,7 +41,7 @@ class WSTestTests(unittest.TestCase):
         self.assertEqual(1, len(ws_tester.messages))
         self.assertEqual(message, ws_tester.messages[0])
 
-    @patch("src.ws_test.websockets")
+    @patch("pywsitest.ws_test.websockets")
     @patch("ssl.SSLContext")
     @syncify
     async def test_websocket_connect(self, mock_ssl, mock_websockets):
@@ -62,7 +62,7 @@ class WSTestTests(unittest.TestCase):
         mock_websockets.connect.assert_called_once_with("wss://example.com", ssl=ssl_context)
         mock_socket.close.assert_called_once()
 
-    @patch("src.ws_test.websockets")
+    @patch("pywsitest.ws_test.websockets")
     @patch("ssl.SSLContext")
     @syncify
     async def test_websocket_connect_with_parameters(self, mock_ssl, mock_websockets):
@@ -96,7 +96,7 @@ class WSTestTests(unittest.TestCase):
         self.assertTrue(ws_tester.expected_responses)
         self.assertEqual(response, ws_tester.expected_responses[0])
 
-    @patch("src.ws_test.websockets")
+    @patch("pywsitest.ws_test.websockets")
     @patch("ssl.SSLContext")
     @syncify
     async def test_websocket_receives_and_handles_single_response(self, mock_ssl, mock_websockets):
@@ -130,7 +130,7 @@ class WSTestTests(unittest.TestCase):
         self.assertTrue(ws_tester.is_complete())
         mock_socket.close.assert_called_once()
 
-    @patch("src.ws_test.websockets")
+    @patch("pywsitest.ws_test.websockets")
     @patch("ssl.SSLContext")
     @syncify
     async def test_websocket_receives_and_handles_multiple_responses(self, mock_ssl, mock_websockets):
@@ -176,7 +176,7 @@ class WSTestTests(unittest.TestCase):
         self.assertTrue(ws_tester.received_json)
         self.assertFalse(ws_tester.received_responses)
 
-    @patch("src.ws_test.websockets")
+    @patch("pywsitest.ws_test.websockets")
     @patch("ssl.SSLContext")
     @syncify
     async def test_websocket_response_timeout(self, mock_ssl, mock_websockets):
@@ -206,7 +206,7 @@ class WSTestTests(unittest.TestCase):
             await ws_tester.run()
         mock_socket.close.assert_called_once()
 
-    @patch("src.ws_test.websockets")
+    @patch("pywsitest.ws_test.websockets")
     @patch("ssl.SSLContext")
     @syncify
     async def test_websocket_message_timeout(self, mock_ssl, mock_websockets):
@@ -236,7 +236,7 @@ class WSTestTests(unittest.TestCase):
             await ws_tester.run()
         mock_socket.close.assert_called_once()
 
-    @patch("src.ws_test.websockets")
+    @patch("pywsitest.ws_test.websockets")
     @patch("ssl.SSLContext")
     @syncify
     async def test_websocket_test_timeout(self, mock_ssl, mock_websockets):
@@ -266,7 +266,7 @@ class WSTestTests(unittest.TestCase):
             await ws_tester.run()
         mock_socket.close.assert_called_once()
 
-    @patch("src.ws_test.websockets")
+    @patch("pywsitest.ws_test.websockets")
     @patch("ssl.SSLContext")
     @syncify
     async def test_websocket_test_send_single_message(self, mock_ssl, mock_websockets):
@@ -294,7 +294,7 @@ class WSTestTests(unittest.TestCase):
         mock_socket.send.assert_called_once_with("{\"test\": 123}")
         mock_socket.close.assert_called_once()
 
-    @patch("src.ws_test.websockets")
+    @patch("pywsitest.ws_test.websockets")
     @patch("ssl.SSLContext")
     @syncify
     async def test_websocket_test_receive_response_with_trigger(self, mock_ssl, mock_websockets):
