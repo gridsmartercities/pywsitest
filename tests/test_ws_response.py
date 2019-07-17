@@ -1,6 +1,5 @@
 import unittest
-from src.ws_response import WSResponse
-from src.ws_message import WSMessage
+from pywsitest import WSResponse, WSMessage
 
 
 class WSResponseTests(unittest.TestCase):

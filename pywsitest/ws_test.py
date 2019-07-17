@@ -2,8 +2,8 @@ import asyncio
 import json
 import ssl
 import websockets
-from src.ws_response import WSResponse
-from src.ws_message import WSMessage
+from .ws_response import WSResponse
+from .ws_message import WSMessage
 
 
 class WSTest:  # noqa: pylint - too-many-instance-attributes
