@@ -1,0 +1,5 @@
+prospector==1.1.6.2
+coverage
+bandit
+pylint_quotes
+websockets
