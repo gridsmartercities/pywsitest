@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - pip install prospector coverage bandit
+      - pip install prospector coverage bandit websockets
   pre_build:
     commands:
       - bandit -r .
