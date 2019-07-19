@@ -4,7 +4,7 @@ LONG_DESCRIPTION = open("README.md").read()
 
 setup(name="pywsitest",
       version="0.1",
-      description="A python API to assist with automated websocket integration testing",
+      description="PYthon WebSocket Integration TESTing framework",
       long_description=LONG_DESCRIPTION,
       long_description_content_type="text/markdown",
       url="https://github.com/gridsmartercities/pywsitest",
