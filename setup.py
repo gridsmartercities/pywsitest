@@ -20,7 +20,7 @@ setup(name="pywsitest",
           "Natural Language :: English"
       ],
       keywords="websocket integration test testing",
-      packages=find_packages(exclude=("tests")),
+      packages=find_packages(exclude=("tests",)),
       install_requires=[
           "websockets"
       ],
