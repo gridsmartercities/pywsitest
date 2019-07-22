@@ -6,7 +6,9 @@
 # pywsitest
 ## PYthon WebSocket Integration TESTing framework
 
-A python API to assist with automated websocket integration testing.
+A python API to assist with automated websocket integration testing
+
+
 
 ## Installation
 ```
@@ -14,6 +16,26 @@ pip install pywsitest
 ```
 
 ## Package contents
+### [WSTest](https://github.com/gridsmartercities/pywsitest/blob/master/pywsitest/ws_test.py)
+WSTest is the main test running class in pywsitest. It currently has the following methods:
+- **with_parameter**: add a query parameter to the connection
+- **with_response**: add an expected response to the test runner
+- **with_message**: add a message for the test runner to send on connection
+- **with_response_timeout**: set the timeout in seconds for the test runner to wait for a response from the websocket
+- **with_message_timeout**: set the timeout in seconds for the test runner to wait while trying to send a message to the websocket
+- **with_test_timeout**: set the timeout in seconds for the test runner to run for
+- **run**: asyncronously run the test runner, sending all messages and listening for responses
+- **is_complete**: check whether all expected responses have been received and messages have been sent
+
+### [WSResponse](https://github.com/gridsmartercities/pywsitest/blob/master/pywsitest/ws_response.py)
+WSResponse is a class to represent an expected response from the websocket
+- **with_attribute**: add an attribute to check an incoming response against
+- **with_trigger**: add a message to trigger when a response matching this instance has been received
+- **is_match**: check whether a received response matches the attributes of this instance
+
+### [WSMessage](https://github.com/gridsmartercities/pywsitest/blob/master/pywsitest/ws_message.py)
+WSMessage is a class to represent a message to send to the websocket
+- **with_attribute**: add an attribute to the message to be sent to the websocket host
 
 ## Examples
 Testing a reponse with a body is received on connection to a websocket:
@@ -70,6 +92,13 @@ assert ws_test.is_complete()
 ```
 
 ## Documentation
+Users can get the docstring help by running:
+```py
+from pywsitest import WSTest
+help(WSTest.with_response)
+```
 
 ## Links
 - [Github](https://github.com/gridsmartercities/pywsitest)
+- [PyPI](https://pypi.org/project/pywsitest)
+- [Test PyPI](https://test.pypi.org/project/pywsitest)
