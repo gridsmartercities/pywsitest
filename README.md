@@ -9,8 +9,6 @@
 
 A python API to assist with automated websocket integration testing
 
-
-
 ## Installation
 ```
 pip install pywsitest
