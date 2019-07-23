@@ -1,23 +1,45 @@
 # Contributing
 
 If you want to contribute to this project, please submit an issue describing your proposed change. We will respond to you as soon as we can.
- 
-If you want to work on that change, fork this Github repo and clone the fork locally.
 
-- you run [__Bandit__](https://pypi.org/project/bandit/) for security checking and all checks are passing:
+This project requires Python 3, all of the initial development has been done using Python 3.7.2
 
-`bandit -r .`
- 
-- you run [__Prospector__](https://pypi.org/project/prospector/) for code analysis and all checks are passing:
+If you want to work on that change, fork this Github repo and clone the fork locally
+```sh
+git clone https://github.com/<your_username>/pywsitest
+cd pywsitest
+```
 
-`prospector`
+Set up a virtual environment and install all dependencies
+```sh
+python -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+```
 
-- you run [__Coverage__](https://pypi.org/project/coverage/) and all unit tests are passing:
+To run unit tests
+```sh
+python -m unittest
+```
 
-`coverage run --branch --source='.' -m unittest`
+In order for changes to be accepted, Grid Smarter Cities requires that all code pass a series of tests
 
-- you have 100% unit test coverage:
+Firstly we require all unit tests to be passing, and that test coverage is 100%
+```sh
+coverage run --branch --source='.' -m unittest
+coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,setup.py,env/*
+```
 
-`coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,setup.py,examples/test_examples.py`
+We require all code to adhere to our linting style as defined in [pylintrc](https://github.com/gridsmartercities/pywsitest/blob/master/pylintrc)
+```sh
+prospector
+```
+
+And lastly that [Bandit](https://pypi.org/project/bandit/) security checks pass
+```sh
+bandit -r .
+```
+
+Once the changes are finished and the criteria for merging are met, simply create a pull request all it'll be reviewed as soon as possible
 
 Thanks for contributing!
