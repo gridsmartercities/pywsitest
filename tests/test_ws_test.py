@@ -21,7 +21,7 @@ class WSTestTests(unittest.TestCase):
     def test_create_ws_test_with_uri(self):
         ws_tester = WSTest("wss://example.com")
         self.assertEqual("wss://example.com", ws_tester.uri)
-    
+
     @patch("websockets.connect")
     @patch("ssl.SSLContext")
     @syncify
