@@ -206,11 +206,11 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
 
     def _get_connection_string(self):
         # wss://example.com?first=123&second=456
-        connection_string = self.uri
+        connection_string = self.uri.strip()
         if self.parameters:
             connection_string += "?"
         for key in self.parameters:
-            connection_string += str(key) + "=" + str(self.parameters[key]) + "&"
+            connection_string += str(key).strip() + "=" + str(self.parameters[key]).strip() + "&"
         return connection_string.strip("&")
 
     def is_complete(self):
