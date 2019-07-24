@@ -164,7 +164,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         Receives any responses from the websocket
 
         Raises:
-            asyncio.TimeoutError: If the test/sending/receiving fails to finish within the time limit
+            WSTimeoutError: If the test/sending/receiving fails to finish within the time limit
         """
         websocket = await websockets.connect(self._get_connection_string(), ssl=ssl.SSLContext())
         try:
