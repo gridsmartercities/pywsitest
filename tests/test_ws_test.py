@@ -2,7 +2,7 @@ import asyncio
 import json
 import unittest
 from unittest.mock import patch, MagicMock
-from pywsitest import WSTest, WSResponse, WSMessage
+from pywsitest import WSTest, WSResponse, WSMessage, WSTimeoutError
 
 
 def syncify(coro):
@@ -202,7 +202,7 @@ class WSTestTests(unittest.TestCase):
         mock_ssl.return_value = ssl_context
 
         self.assertEqual(ws_tester.response_timeout, 0.1)
-        with self.assertRaises(asyncio.TimeoutError):
+        with self.assertRaises(WSTimeoutError):
             await ws_tester.run()
         mock_socket.close.assert_called_once()
 
@@ -232,7 +232,7 @@ class WSTestTests(unittest.TestCase):
         mock_ssl.return_value = ssl_context
 
         self.assertEqual(ws_tester.message_timeout, 0.1)
-        with self.assertRaises(asyncio.TimeoutError):
+        with self.assertRaises(WSTimeoutError):
             await ws_tester.run()
         mock_socket.close.assert_called_once()
 
@@ -262,7 +262,7 @@ class WSTestTests(unittest.TestCase):
         mock_ssl.return_value = ssl_context
 
         self.assertEqual(ws_tester.test_timeout, 0.1)
-        with self.assertRaises(asyncio.TimeoutError):
+        with self.assertRaises(WSTimeoutError):
             await ws_tester.run()
         mock_socket.close.assert_called_once()
 
