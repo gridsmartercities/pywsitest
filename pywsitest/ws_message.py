@@ -1,4 +1,5 @@
 import json
+import re
 
 
 class WSMessage:
@@ -11,6 +12,8 @@ class WSMessage:
     Methods:
         with_attribute(key, value):
             Adds an attribute and returns the WSMessage
+        resolve(response):
+            Resolves any attributes that get their value from a parent response
 
     Usage:
         message = (
@@ -39,3 +42,22 @@ class WSMessage:
         """
         self.attributes[key] = value
         return self
+
+    def resolve(self, response):
+        regex = re.compile("^\$\{(.*)\}$")  # noqa: pylint - anomalous-backslash-in-string
+        for key in self.attributes:
+            value = self.attributes[key]
+            match = regex.match(str(value))
+            if match:
+                resolved = self._get_resolved_value(response, match.group(1))
+                self.attributes[key] = resolved if resolved else value
+        return self
+
+    def _get_resolved_value(self, response, path):  # noqa: pylint - no-self-use
+        resolved = response
+        for part in path.split("/"):
+            if part in resolved:
+                resolved = resolved[part]
+            else:
+                return None
+        return resolved
