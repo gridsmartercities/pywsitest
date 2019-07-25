@@ -37,7 +37,7 @@ prospector
 
 And lastly that [Bandit](https://pypi.org/project/bandit/) security checks pass
 ```sh
-bandit -r .
+bandit -r . -x env/
 ```
 
 Once the changes are finished and the criteria for merging are met, simply create a pull request all it'll be reviewed as soon as possible

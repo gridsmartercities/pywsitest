@@ -22,6 +22,52 @@ class WSTestTests(unittest.TestCase):
         ws_tester = WSTest("wss://example.com")
         self.assertEqual("wss://example.com", ws_tester.uri)
 
+    @patch("websockets.connect")
+    @patch("ssl.SSLContext")
+    @syncify
+    async def test_whitespace_is_stripped_from_uri_on_connect(self, mock_ssl, mock_websockets):
+        ws_tester = WSTest("\n wss://example.com \n")
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        mock_websockets.return_value = asyncio.Future()
+        mock_websockets.return_value.set_result(mock_socket)
+
+        ssl_context = MagicMock()
+        mock_ssl.return_value = ssl_context
+
+        await ws_tester.run()
+
+        mock_websockets.assert_called_once_with("wss://example.com", ssl=ssl_context)
+        mock_socket.close.assert_called_once()
+
+    @patch("websockets.connect")
+    @patch("ssl.SSLContext")
+    @syncify
+    async def test_whitespace_is_stripped_from_uri_with_query_parameter_on_connect(self, mock_ssl, mock_websockets):
+        ws_tester = (
+            WSTest("\n wss://example.com \n")
+            .with_parameter("\n test \n", "\n example \n")
+        )
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        mock_websockets.return_value = asyncio.Future()
+        mock_websockets.return_value.set_result(mock_socket)
+
+        ssl_context = MagicMock()
+        mock_ssl.return_value = ssl_context
+
+        await ws_tester.run()
+
+        expected_uri = "wss://example.com?test=example"
+        mock_websockets.assert_called_once_with(expected_uri, ssl=ssl_context)
+        mock_socket.close.assert_called_once()
+
     def test_add_key_value_query_parameter(self):
         ws_tester = (
             WSTest("wss://example.com")
