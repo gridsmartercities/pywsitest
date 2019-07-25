@@ -49,7 +49,7 @@ class WSMessage:
 
         Parameters:
             response (dict): The response object to resolve attributes from
-        
+
         Returns:
             (WSMessage): The WSMessage instance resolve was called on
         """
