@@ -44,6 +44,15 @@ class WSMessage:
         return self
 
     def resolve(self, response):
+        """
+        Resolves attributes using ${path/to/property} notation with response as the source
+
+        Parameters:
+            response (dict): The response object to resolve attributes from
+        
+        Returns:
+            (WSMessage): The WSMessage instance resolve was called on
+        """
         regex = re.compile("^\$\{(.*)\}$")  # noqa: pylint - anomalous-backslash-in-string
         for key in self.attributes:
             value = self.attributes[key]
