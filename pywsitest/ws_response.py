@@ -1,3 +1,4 @@
+import json
 from .ws_message import WSMessage
 
 
@@ -31,6 +32,9 @@ class WSResponse:
     def __init__(self):
         self.attributes = {}
         self.triggers = []
+
+    def __str__(self):
+        return json.dumps(self.attributes)
 
     def with_attribute(self, attribute, value=None):
         """

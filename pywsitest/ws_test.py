@@ -4,6 +4,7 @@ import ssl
 import websockets
 from .ws_response import WSResponse
 from .ws_message import WSMessage
+from .ws_timeout_error import WSTimeoutError
 
 
 class WSTest:  # noqa: pylint - too-many-instance-attributes
@@ -163,12 +164,14 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         Receives any responses from the websocket
 
         Raises:
-            asyncio.TimeoutError: If the test/sending/receiving fails to finish within the time limit
+            WSTimeoutError: If the test/sending/receiving fails to finish within the time limit
         """
         websocket = await websockets.connect(self._get_connection_string(), ssl=ssl.SSLContext())
         try:
             # Run the receive and send methods async with a timeout
             await asyncio.wait_for(self._runner(websocket), timeout=self.test_timeout)
+        except asyncio.TimeoutError as ex:
+            raise WSTimeoutError("Timed out waiting for test to finish") from ex
         finally:
             await websocket.close()
 
@@ -178,8 +181,12 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     async def _receive(self, websocket):
         # iterate while there are still expected responses that haven't been received yet
         while self.expected_responses:
-            response = await asyncio.wait_for(websocket.recv(), timeout=self.response_timeout)
-            await self._receive_handler(websocket, response)
+            try:
+                response = await asyncio.wait_for(websocket.recv(), timeout=self.response_timeout)
+                await self._receive_handler(websocket, response)
+            except asyncio.TimeoutError as ex:
+                error_message = self._get_receive_error_message()
+                raise WSTimeoutError(error_message) from ex
 
     async def _receive_handler(self, websocket, response):
         self.received_json.append(response)
@@ -201,8 +208,12 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             await self._send_handler(websocket, message)
 
     async def _send_handler(self, websocket, message):
-        await asyncio.wait_for(websocket.send(str(message)), timeout=self.message_timeout)
-        self.sent_messages.append(message)
+        try:
+            await asyncio.wait_for(websocket.send(str(message)), timeout=self.message_timeout)
+            self.sent_messages.append(message)
+        except asyncio.TimeoutError as ex:
+            error_message = "Timed out trying to send message:\n" + str(message)
+            raise WSTimeoutError(error_message) from ex
 
     def _get_connection_string(self):
         # wss://example.com?first=123&second=456
@@ -212,6 +223,12 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         for key in self.parameters:
             connection_string += str(key).strip() + "=" + str(self.parameters[key]).strip() + "&"
         return connection_string.strip("&")
+
+    def _get_receive_error_message(self):
+        error_message = "Timed out waiting for responses:"
+        for response in self.expected_responses:
+            error_message += "\n" + str(response)
+        return error_message
 
     def is_complete(self):
         """

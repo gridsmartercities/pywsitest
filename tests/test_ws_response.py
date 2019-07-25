@@ -83,3 +83,7 @@ class WSResponseTests(unittest.TestCase):
 
         self.assertEqual(1, len(ws_response.triggers))
         self.assertEqual(message, ws_response.triggers[0])
+
+    def test_stringify(self):
+        response = WSResponse().with_attribute("test", 123)
+        self.assertEqual("{\"test\": 123}", str(response))
