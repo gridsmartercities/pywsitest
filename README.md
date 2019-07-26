@@ -37,7 +37,7 @@ WSMessage is a class to represent a message to send to the websocket
 - **with_attribute**: add an attribute to the message to be sent to the websocket host
 
 ## Examples
-Testing a reponse with a body is received on connection to a websocket:
+Testing a reponse with a body is received on connection to a websocket host:
 ```py
 from pywsitest import WSTest, WSResponse
 
@@ -54,34 +54,44 @@ await ws_test.run()
 assert ws_test.is_complete()
 ```
 
-Testing a more complex set of responses and messages:
+Sending a message on connection to a websocket host:
+```py
+from pywsitest import WSTest, WSMessage
+
+ws_test = (
+    WSTest("wss://example.com")
+    .with_message(
+        WSMessage()
+        .with_attribute("body", "Hello, world!")
+    )
+)
+
+await ws_test.run()
+
+assert ws_test.is_complete()
+```
+
+Triggering a message to be sent when the following response is received:
+```json
+{
+    "body": {
+        "message": "Hello, world!"
+    }
+}
+```
+
 ```py
 from pywsitest import WSTest, WSResponse, WSMessage
 
 ws_test = (
     WSTest("wss://example.com")
-    .with_parameter("Authorization", "eyJra...")
-    .with_response_timeout(15) # 15 seconds
-    .with_message_timeout(7.5)
-    .with_test_timeout(45)
-    .with_message(
-        WSMessage()
-        .with_attribute("type", "connect")
-        .with_attribute("body", {"chatroom": "general"})
-    )
     .with_response(
         WSResponse()
-        .with_attribute("type", "connected")
+        .with_attribute("body")
         .with_trigger(
             WSMessage()
-            .with_attribute("type", "message")
-            .with_attribute("body", "Hello, world!")
+            .with_attribute("body", "${body/message}")
         )
-    )
-    .with_response(
-        WSResponse()
-        .with_attribute("type", "message")
-        .with_attribute("body", "Hello, world!")
     )
 )
 

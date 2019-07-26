@@ -196,11 +196,13 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             if expected_response.is_match(parsed_response):
                 self.received_responses.append(expected_response)
                 self.expected_responses.remove(expected_response)
-
-                for message in expected_response.triggers:
-                    await self._send_handler(websocket, message)
-
+                await self._trigger_handler(websocket, expected_response, parsed_response)
                 break
+
+    async def _trigger_handler(self, websocket, response, raw_response):
+        for message in response.triggers:
+            message = message.resolve(raw_response)
+            await self._send_handler(websocket, message)
 
     async def _send(self, websocket):
         while self.messages:
