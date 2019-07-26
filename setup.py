@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 LONG_DESCRIPTION = open("README.md").read()
 
 setup(name="pywsitest",
-      version="0.1",
+      version="0.2",
       description="PYthon WebSocket Integration TESTing framework",
       long_description=LONG_DESCRIPTION,
       long_description_content_type="text/markdown",
