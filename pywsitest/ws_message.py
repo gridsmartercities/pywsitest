@@ -12,6 +12,8 @@ class WSMessage:
     Methods:
         with_attribute(key, value):
             Adds an attribute and returns the WSMessage
+        with_delay(delay):
+            Adds a delay to message being sent
         resolve(response):
             Resolves any attributes that get their value from a parent response
 
@@ -24,6 +26,7 @@ class WSMessage:
 
     def __init__(self):
         self.attributes = {}
+        self.delay = 0.0
 
     def __str__(self):
         # Output the attributes dictionary as json
@@ -41,6 +44,19 @@ class WSMessage:
             (WSMessage): The WSMessage instance with_attribute was called on
         """
         self.attributes[key] = value
+        return self
+
+    def with_delay(self, delay: float):
+        """
+        Adds a delay (in seconds) to the message sending
+
+        Parameters:
+            delay (float): The time to wait before sending the message in seconds
+
+        Returns:
+            (WSMessage): The WSMessage instance with_delay was called on
+        """
+        self.delay = delay
         return self
 
     def resolve(self, response):

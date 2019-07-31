@@ -15,6 +15,15 @@ class WSMessageTests(unittest.TestCase):
         self.assertIn("test", ws_message.attributes)
         self.assertEqual(1, len(ws_message.attributes))
 
+    def test_with_delay(self):
+        ws_message = (
+            WSMessage()
+            .with_attribute("test", 123)
+            .with_delay(0.1)
+        )
+
+        self.assertEqual(0.1, ws_message.delay)
+
     def test_stringify_with_attribute(self):
         ws_message = WSMessage().with_attribute("test", 123)
 

@@ -1,6 +1,7 @@
 import asyncio
 import json
 import ssl
+import time
 import websockets
 from .ws_response import WSResponse
 from .ws_message import WSMessage
@@ -214,6 +215,8 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
 
     async def _send_handler(self, websocket, message):
         try:
+            if message.delay:
+                time.sleep(message.delay)
             await asyncio.wait_for(websocket.send(str(message)), timeout=self.message_timeout)
             self.sent_messages.append(message)
         except asyncio.TimeoutError as ex:
