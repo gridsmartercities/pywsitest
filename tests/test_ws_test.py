@@ -16,7 +16,7 @@ def syncify(coro):
     return wrapper
 
 
-class WSTestTests(unittest.TestCase):
+class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
     def test_create_ws_test_with_uri(self):
         ws_tester = WSTest("wss://example.com")
@@ -463,8 +463,7 @@ class WSTestTests(unittest.TestCase):
 
         receive_future = asyncio.Future()
         receive_future.set_result(json.dumps({"type": "Hello, world!"}))
-        mock_socket.recv = MagicMock(
-            side_effect=[receive_future, asyncio.Future()])
+        mock_socket.recv = MagicMock(side_effect=[receive_future, asyncio.Future()])
 
         mock_websockets.return_value = asyncio.Future()
         mock_websockets.return_value.set_result(mock_socket)
@@ -475,6 +474,72 @@ class WSTestTests(unittest.TestCase):
         await ws_tester.run()
 
         self.assertTrue(ws_tester.is_complete())
-        mock_socket.send.assert_called_once_with(
-            "{\"test\": \"${body}\"}")
+        mock_socket.send.assert_called_once_with("{\"test\": \"${body}\"}")
+        mock_socket.close.assert_called_once()
+
+    @patch("time.sleep")
+    @patch("websockets.connect")
+    @syncify
+    async def test_websocket_senfing_message_with_delay(self, mock_websockets, mock_sleep):
+        ws_tester = (
+            WSTest("ws://example.com")
+            .with_message(
+                WSMessage()
+                .with_attribute("test", 123)
+                .with_delay(1)
+            )
+        )
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        send_future = asyncio.Future()
+        send_future.set_result({})
+        mock_socket.send = MagicMock(return_value=send_future)
+
+        mock_socket.recv = MagicMock(return_value=asyncio.Future())
+        mock_socket.recv.return_value.set_result(MagicMock())
+
+        mock_websockets.return_value = asyncio.Future()
+        mock_websockets.return_value.set_result(mock_socket)
+
+        await ws_tester.run()
+
+        self.assertTrue(ws_tester.is_complete())
+        mock_socket.send.assert_called_once_with("{\"test\": 123}")
+        mock_sleep.assert_called_once_with(1)
+        mock_socket.close.assert_called_once()
+
+    @patch("time.sleep")
+    @patch("websockets.connect")
+    @syncify
+    async def test_websocket_senfing_message_with_no_delay(self, mock_websockets, mock_sleep):
+        ws_tester = (
+            WSTest("ws://example.com")
+            .with_message(
+                WSMessage()
+                .with_attribute("test", 123)
+            )
+        )
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        send_future = asyncio.Future()
+        send_future.set_result({})
+        mock_socket.send = MagicMock(return_value=send_future)
+
+        mock_socket.recv = MagicMock(return_value=asyncio.Future())
+        mock_socket.recv.return_value.set_result(MagicMock())
+
+        mock_websockets.return_value = asyncio.Future()
+        mock_websockets.return_value.set_result(mock_socket)
+
+        await ws_tester.run()
+
+        self.assertTrue(ws_tester.is_complete())
+        mock_socket.send.assert_called_once_with("{\"test\": 123}")
+        mock_sleep.assert_not_called()
         mock_socket.close.assert_called_once()
