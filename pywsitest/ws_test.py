@@ -169,7 +169,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         connection_string = self._get_connection_string()
         ssl_context = ssl.SSLContext() if connection_string.startswith("wss://") else None
         websocket = await websockets.connect(connection_string, ssl=ssl_context)
-        
+
         try:
             # Run the receive and send methods async with a timeout
             await asyncio.wait_for(self._runner(websocket), timeout=self.test_timeout)
