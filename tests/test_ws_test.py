@@ -109,6 +109,23 @@ class WSTestTests(unittest.TestCase):
         mock_socket.close.assert_called_once()
 
     @patch("websockets.connect")
+    @syncify
+    async def test_websocket_connect_unsecured(self, mock_websockets):
+        ws_tester = WSTest("ws://example.com")
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        mock_websockets.return_value = asyncio.Future()
+        mock_websockets.return_value.set_result(mock_socket)
+
+        await ws_tester.run()
+
+        mock_websockets.assert_called_once_with("ws://example.com", ssl=None)
+        mock_socket.close.assert_called_once()
+
+    @patch("websockets.connect")
     @patch("ssl.SSLContext")
     @syncify
     async def test_websocket_connect_with_parameters(self, mock_ssl, mock_websockets):

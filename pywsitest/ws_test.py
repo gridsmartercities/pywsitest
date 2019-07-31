@@ -61,7 +61,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         assert ws_tester.is_complete()
     """
 
-    def __init__(self, uri):
+    def __init__(self, uri: str):
         """
         Parameters:
             uri (str): The uri of the websocket api
@@ -166,7 +166,10 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         Raises:
             WSTimeoutError: If the test/sending/receiving fails to finish within the time limit
         """
-        websocket = await websockets.connect(self._get_connection_string(), ssl=ssl.SSLContext())
+        connection_string = self._get_connection_string()
+        ssl_context = ssl.SSLContext() if connection_string.startswith("wss://") else None
+        websocket = await websockets.connect(connection_string, ssl=ssl_context)
+        
         try:
             # Run the receive and send methods async with a timeout
             await asyncio.wait_for(self._runner(websocket), timeout=self.test_timeout)
