@@ -35,6 +35,7 @@ WSResponse is a class to represent an expected response from the websocket
 ### [WSMessage](https://github.com/gridsmartercities/pywsitest/blob/master/pywsitest/ws_message.py)
 WSMessage is a class to represent a message to send to the websocket
 - **with_attribute**: add an attribute to the message to be sent to the websocket host
+- **with_delay**: add a delay to the message to be sent to the websocket host
 
 ## Examples
 Testing a reponse with a body is received on connection to a websocket host:
