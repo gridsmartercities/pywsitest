@@ -1,4 +1,6 @@
 import json
+
+from .utils import get_resolved_value
 from .ws_message import WSMessage
 
 
@@ -33,10 +35,10 @@ class WSResponse:
         self.attributes = {}
         self.triggers = []
 
-    def __str__(self):
+    def __str__(self) -> str:
         return json.dumps(self.attributes)
 
-    def with_attribute(self, attribute, value=None):
+    def with_attribute(self, attribute, value=None) -> "WSResponse":
         """
         Adds a key/value pair to the attributes dictionary
 
@@ -50,7 +52,7 @@ class WSResponse:
         self.attributes[attribute] = value
         return self
 
-    def with_trigger(self, message: WSMessage):
+    def with_trigger(self, message: WSMessage) -> "WSResponse":
         """
         Adds a trigger to the triggers list
 
@@ -63,7 +65,7 @@ class WSResponse:
         self.triggers.append(message)
         return self
 
-    def is_match(self, response: dict):
+    def is_match(self, response: dict) -> bool:
         """
         Checks if this WSResponse instance matches an input response by checking all attributes are present
 
@@ -74,9 +76,10 @@ class WSResponse:
             (bool): True if the response matches based on the attributes
         """
         for key in self.attributes:
-            if key not in response:
+            resolved_value = get_resolved_value(response, key)
+            if resolved_value is None:
                 return False
-            # Check attribute values only if value isn't none
-            if self.attributes[key] is not None and response[key] != self.attributes[key]:
+
+            if self.attributes[key] is not None and self.attributes[key] != resolved_value:
                 return False
         return True

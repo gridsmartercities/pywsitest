@@ -78,13 +78,13 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.message_timeout = 10.0
         self.test_timeout = 60.0
 
-    def with_parameter(self, key, value):
+    def with_parameter(self, key: str, value: object) -> "WSTest":
         """
         Adds a key/value pair to the parameters dictionary
         Parameters are query parameters used to connect to the websocket
 
         Parameters:
-            key (obj): The key of the parameter
+            key (str): The key of the parameter
             value (obj, optional): The value of the parameter
 
         Returns:
@@ -93,7 +93,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.parameters[key] = value
         return self
 
-    def with_response(self, response: WSResponse):
+    def with_response(self, response: WSResponse) -> "WSTest":
         """
         Adds a response to the expected responses list
 
@@ -106,7 +106,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.expected_responses.append(response)
         return self
 
-    def with_message(self, message: WSMessage):
+    def with_message(self, message: WSMessage) -> "WSTest":
         """
         Adds a message to the messages list
 
@@ -119,7 +119,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.messages.append(message)
         return self
 
-    def with_response_timeout(self, timeout: float):
+    def with_response_timeout(self, timeout: float) -> "WSTest":
         """
         Sets the response timeout in seconds
 
@@ -132,7 +132,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.response_timeout = timeout
         return self
 
-    def with_message_timeout(self, timeout: float):
+    def with_message_timeout(self, timeout: float) -> "WSTest":
         """
         Sets the message timeout in seconds
 
@@ -145,7 +145,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.message_timeout = timeout
         return self
 
-    def with_test_timeout(self, timeout: float):
+    def with_test_timeout(self, timeout: float) -> "WSTest":
         """
         Sets the test timeout in seconds
 
@@ -223,7 +223,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             error_message = "Timed out trying to send message:\n" + str(message)
             raise WSTimeoutError(error_message) from ex
 
-    def _get_connection_string(self):
+    def _get_connection_string(self) -> str:
         # wss://example.com?first=123&second=456
         connection_string = self.uri.strip()
         if self.parameters:
@@ -232,13 +232,13 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             connection_string += str(key).strip() + "=" + str(self.parameters[key]).strip() + "&"
         return connection_string.strip("&")
 
-    def _get_receive_error_message(self):
+    def _get_receive_error_message(self) -> str:
         error_message = "Timed out waiting for responses:"
         for response in self.expected_responses:
             error_message += "\n" + str(response)
         return error_message
 
-    def is_complete(self):
+    def is_complete(self) -> bool:
         """
         Checks whether the test has finished running
 

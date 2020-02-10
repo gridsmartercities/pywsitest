@@ -87,3 +87,51 @@ class WSResponseTests(unittest.TestCase):
     def test_stringify(self):
         response = WSResponse().with_attribute("test", 123)
         self.assertEqual("{\"test\": 123}", str(response))
+
+    def test_resolved_attribute_match(self):
+        ws_response = (
+            WSResponse()
+            .with_attribute("type", "new_request")
+            .with_attribute("body/attribute", "value")
+        )
+
+        test_data = {
+            "type": "new_request",
+            "body": {
+                "attribute": "value"
+            }
+        }
+
+        self.assertTrue(ws_response.is_match(test_data))
+
+    def test_no_resolved_attribute_match(self):
+        ws_response = (
+            WSResponse()
+            .with_attribute("type", "new_request")
+            .with_attribute("body/attribute", "value")
+        )
+
+        test_data = {
+            "type": "new_request",
+            "body": {
+                "not_attribute": "not_value"
+            }
+        }
+
+        self.assertFalse(ws_response.is_match(test_data))
+
+    def test_resolved_attribute_no_match(self):
+        ws_response = (
+            WSResponse()
+            .with_attribute("type", "new_request")
+            .with_attribute("body/attribute", "value")
+        )
+
+        test_data = {
+            "type": "new_request",
+            "body": {
+                "attribute": "not_value"
+            }
+        }
+
+        self.assertFalse(ws_response.is_match(test_data))
