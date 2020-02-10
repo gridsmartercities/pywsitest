@@ -3,8 +3,9 @@ import json
 import ssl
 import time
 import websockets
-from .ws_response import WSResponse
+
 from .ws_message import WSMessage
+from .ws_response import WSResponse
 from .ws_timeout_error import WSTimeoutError
 
 

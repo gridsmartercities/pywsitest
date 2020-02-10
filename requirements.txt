@@ -1,4 +1,4 @@
-prospector==1.1.6.2
+prospector
 coverage
 bandit
 pylint_quotes

@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 
+
 LONG_DESCRIPTION = open("README.md").read()
 
 setup(name="pywsitest",
