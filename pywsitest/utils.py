@@ -1,0 +1,23 @@
+import re
+
+
+PATH_REGEX = re.compile(r"^\$\{(.*)\}$")
+
+
+def get_resolved_value(response: dict, path: str) -> object:
+    """
+    Retrieves a value from a dictionary at a given path
+
+    Parameters:
+        response (dict): The response to check against for a value
+
+    Returns:
+        (object): The object at a given path, or None if the path can't be found
+    """
+    resolved = response
+    for part in path.split("/"):
+        if part in resolved:
+            resolved = resolved[part]
+        else:
+            return None
+    return resolved

@@ -1,5 +1,6 @@
 import json
-import re
+
+from .utils import get_resolved_value, PATH_REGEX
 
 
 class WSMessage:
@@ -28,16 +29,16 @@ class WSMessage:
         self.attributes = {}
         self.delay = 0.0
 
-    def __str__(self):
+    def __str__(self) -> str:
         # Output the attributes dictionary as json
         return json.dumps(self.attributes)
 
-    def with_attribute(self, key, value):
+    def with_attribute(self, key: str, value: object) -> "WSMessage":
         """
         Adds a key/value pair to the attributes dictionary
 
         Parameters:
-            key (obj): The key of the attribute
+            key (str): The key of the attribute
             value (obj): The value of the attribute
 
         Returns:
@@ -46,7 +47,7 @@ class WSMessage:
         self.attributes[key] = value
         return self
 
-    def with_delay(self, delay: float):
+    def with_delay(self, delay: float) -> "WSMessage":
         """
         Adds a delay (in seconds) to the message sending
 
@@ -59,7 +60,7 @@ class WSMessage:
         self.delay = delay
         return self
 
-    def resolve(self, response):
+    def resolve(self, response: dict) -> "WSMessage":
         """
         Resolves attributes using ${path/to/property} notation with response as the source
 
@@ -69,20 +70,10 @@ class WSMessage:
         Returns:
             (WSMessage): The WSMessage instance resolve was called on
         """
-        regex = re.compile("^\$\{(.*)\}$")  # noqa: pylint - anomalous-backslash-in-string
         for key in self.attributes:
             value = self.attributes[key]
-            match = regex.match(str(value))
+            match = PATH_REGEX.match(str(value))
             if match:
-                resolved = self._get_resolved_value(response, match.group(1))
+                resolved = get_resolved_value(response, match.group(1))
                 self.attributes[key] = resolved if resolved else value
         return self
-
-    def _get_resolved_value(self, response, path):  # noqa: pylint - no-self-use
-        resolved = response
-        for part in path.split("/"):
-            if part in resolved:
-                resolved = resolved[part]
-            else:
-                return None
-        return resolved
