@@ -38,7 +38,7 @@ WSMessage is a class to represent a message to send to the websocket
 - **with_delay**: add a delay to the message to be sent to the websocket host
 
 ## Examples
-Testing a reponse with a body is received on connection to a websocket host:
+Testing a response with a body is received on connection to a websocket host:
 ```py
 from pywsitest import WSTest, WSResponse
 
@@ -47,6 +47,32 @@ ws_test = (
     .with_response(
         WSResponse()
         .with_attribute("body")
+    )
+)
+
+await ws_test.run()
+
+assert ws_test.is_complete()
+```
+
+Testing a response with the following more complicated body is received on connection to a websocket host:
+```json
+{
+    "body": {
+        "attribute": "value"
+    }
+}
+```
+
+```py
+from pywsitest import WSTest, WSResponse
+
+ws_test = (
+    WSTest("wss://example.com")
+    .with_response(
+        WSResponse()
+        .with_attribute("body")
+        .with_attribute("body/attribute", "value")
     )
 )
 
