@@ -38,12 +38,12 @@ class WSResponse:
     def __str__(self) -> str:
         return json.dumps(self.attributes)
 
-    def with_attribute(self, attribute, value=None) -> "WSResponse":
+    def with_attribute(self, attribute: str, value: object = None) -> "WSResponse":
         """
         Adds a key/value pair to the attributes dictionary
 
         Parameters:
-            key (obj): The key of the attribute
+            attribute (str): The key of the attribute
             value (obj, optional): The value of the attribute
 
         Returns:
