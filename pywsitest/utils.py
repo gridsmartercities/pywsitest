@@ -10,6 +10,7 @@ def get_resolved_value(response: dict, path: str) -> object:
 
     Parameters:
         response (dict): The response to check against for a value
+        path (str): The path in the response to check for a value
 
     Returns:
         (object): The object at a given path, or None if the path can't be found
