@@ -55,7 +55,7 @@ await ws_test.run()
 assert ws_test.is_complete()
 ```
 
-Testing a response with the following more complicated body is received on connection to a websocket host:
+Testing that a response with the following more complicated body is received on connection to a websocket host:
 ```json
 {
     "body": {
