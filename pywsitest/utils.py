@@ -17,8 +17,7 @@ def get_resolved_value(response: dict, path: str) -> object:
     """
     resolved = response
     for part in path.split("/"):
-        if part in resolved:
-            resolved = resolved[part]
-        else:
+        if part not in resolved:
             return None
+        resolved = resolved[part]
     return resolved
