@@ -77,9 +77,14 @@ class WSResponse:
         """
         for key in self.attributes:
             resolved_value = get_resolved_value(response, key)
+
             if resolved_value is None:
                 return False
 
-            if self.attributes[key] is not None and self.attributes[key] != resolved_value:
+            if self.attributes[key] is None:
+                continue
+
+            if self.attributes[key] != resolved_value:
                 return False
+
         return True
