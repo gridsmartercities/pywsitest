@@ -3,6 +3,7 @@ import json
 import ssl
 import time
 import websockets
+from websockets.client import WebSocketClientProtocol
 
 from .ws_message import WSMessage
 from .ws_response import WSResponse
@@ -180,10 +181,10 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         finally:
             await websocket.close()
 
-    async def _runner(self, websocket):
+    async def _runner(self, websocket: WebSocketClientProtocol):
         await asyncio.gather(self._receive(websocket), self._send(websocket))
 
-    async def _receive(self, websocket):
+    async def _receive(self, websocket: WebSocketClientProtocol):
         # iterate while there are still expected responses that haven't been received yet
         while self.expected_responses:
             try:
@@ -193,7 +194,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
                 error_message = self._get_receive_error_message()
                 raise WSTimeoutError(error_message) from ex
 
-    async def _receive_handler(self, websocket, response):
+    async def _receive_handler(self, websocket: WebSocketClientProtocol, response: str):
         self.received_json.append(response)
         parsed_response = json.loads(response)
 
@@ -204,17 +205,17 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
                 await self._trigger_handler(websocket, expected_response, parsed_response)
                 break
 
-    async def _trigger_handler(self, websocket, response, raw_response):
+    async def _trigger_handler(self, websocket: WebSocketClientProtocol, response: WSResponse, raw_response: dict):
         for message in response.triggers:
             message = message.resolve(raw_response)
             await self._send_handler(websocket, message)
 
-    async def _send(self, websocket):
+    async def _send(self, websocket: WebSocketClientProtocol):
         while self.messages:
             message = self.messages.pop(0)
             await self._send_handler(websocket, message)
 
-    async def _send_handler(self, websocket, message):
+    async def _send_handler(self, websocket: WebSocketClientProtocol, message: WSMessage):
         try:
             if message.delay:
                 time.sleep(message.delay)
