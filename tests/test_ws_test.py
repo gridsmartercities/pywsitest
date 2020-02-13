@@ -8,11 +8,7 @@ from pywsitest import WSTest, WSResponse, WSMessage, WSTimeoutError
 
 def syncify(coro):
     def wrapper(*args, **kwargs):
-        loop = asyncio.new_event_loop()
-        try:
-            response = loop.run_until_complete(coro(*args, **kwargs))
-        finally:
-            loop.close()
+        response = asyncio.run(coro(*args, **kwargs))
         return response
     return wrapper
 
