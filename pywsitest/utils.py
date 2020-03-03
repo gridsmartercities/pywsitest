@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import List, Tuple
 
 
 PATH_REGEX = re.compile(r"^\$\{(.*)\}$")
@@ -29,35 +29,42 @@ def get_resolved_value(response: dict, path: str) -> object:
 
 
 def get_resolved_values(response: [list, dict], path: str) -> List[object]:
-    resolved = _recurse_resolve(response, path)
+    resolved = _recurse_resolve(response, path.lstrip("/"))
     return [res for res in resolved if res is not None]
 
 
 def _recurse_resolve(working: object, path: str) -> List[object]:
-    resolved = []
-    path = path.lstrip("/")
+    if not path:
+        return [working]
 
     if isinstance(working, list):
-        resolved.extend(_resolve_index(working, path))
-    else:
-        resolved.extend(_resolve_path(working, path))
+        return _resolve_index(working, path)
 
-    return resolved
+    if isinstance(working, dict):
+        return _resolve_path(working, path)
+
+    return []
+
+
+def _to_int(value: str) -> Tuple[int, bool]:
+    try:
+        return int(value), True
+    except ValueError:
+        return 0, False
 
 
 def _resolve_path(working: dict, path: str) -> List[object]:
     resolved = []
 
-    match = WORD_REGEX.match(path)
-    if not match:
+    paths = path.split("/", 1)
+
+    if not paths[0]:
         return resolved
 
-    path = match.group(1)
-    working = working.get(path)
+    working = working.get(paths[0])
 
-    path = match.group(2)
-    if path:
-        resolved.extend(_recurse_resolve(working, path))
+    if len(paths) > 1:
+        resolved.extend(_recurse_resolve(working, paths[1]))
     else:
         resolved.append(working)
 
@@ -67,24 +74,25 @@ def _resolve_path(working: dict, path: str) -> List[object]:
 def _resolve_index(working: list, path: str) -> List[object]:
     resolved = []
 
-    match = LIST_INDEX.match(path)
-    if not match:
-        return resolved
+    paths = path.split("/", 1)
 
-    index = match.group(1)
-    path = match.group(2)
+    if paths[0]:
+        index, success = _to_int(paths[0])
+        if not success or len(working) <= index:
+            return resolved
 
-    if not index:
-        for work in working:
-            resolved.extend(_recurse_resolve(work, path))
-        return resolved
-
-    index = int(index)
-    if len(working) > index:
         working = working[index]
-        if path:
-            resolved.extend(_recurse_resolve(working, path))
+
+        if len(paths) > 1:
+            resolved.extend(_recurse_resolve(working, paths[1]))
         else:
             resolved.append(working)
+    else:
+        if len(paths) > 1:
+            for work in working:
+                resolved.extend(_recurse_resolve(work, paths[1]))
+        else:
+            for work in working:
+                resolved.append(work)
 
     return resolved

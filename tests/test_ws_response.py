@@ -155,7 +155,7 @@ class WSResponseTests(unittest.TestCase):  # noqa: pylint - too-many-public-meth
         self.assertTrue(ws_response.is_match(test_data))
 
     def test_resolved_attribute_by_list_index(self):
-        ws_response = WSResponse().with_attribute("body[0]colour", "red")
+        ws_response = WSResponse().with_attribute("body/0/colour", "red")
 
         test_data = {
             "body": [
@@ -168,7 +168,7 @@ class WSResponseTests(unittest.TestCase):  # noqa: pylint - too-many-public-meth
         self.assertTrue(ws_response.is_match(test_data))
 
     def test_resolved_attribute_by_list_without_index(self):
-        ws_response = WSResponse().with_attribute("body[]colour", "green")
+        ws_response = WSResponse().with_attribute("body//colour", "green")
 
         test_data = {
             "body": [
@@ -181,7 +181,7 @@ class WSResponseTests(unittest.TestCase):  # noqa: pylint - too-many-public-meth
         self.assertTrue(ws_response.is_match(test_data))
 
     def test_resolved_attribute_by_list_index_no_match(self):
-        ws_response = WSResponse().with_attribute("body[1]colour", "yellow")
+        ws_response = WSResponse().with_attribute("body/1/colour", "yellow")
 
         test_data = {
             "body": [
@@ -194,7 +194,7 @@ class WSResponseTests(unittest.TestCase):  # noqa: pylint - too-many-public-meth
         self.assertFalse(ws_response.is_match(test_data))
 
     def test_resolved_attribute_by_list_index_not_enough_elements(self):
-        ws_response = WSResponse().with_attribute("body[0]colour", "red")
+        ws_response = WSResponse().with_attribute("body/0/colour", "red")
 
         test_data = {
             "body": []
@@ -203,7 +203,7 @@ class WSResponseTests(unittest.TestCase):  # noqa: pylint - too-many-public-meth
         self.assertFalse(ws_response.is_match(test_data))
 
     def test_resolved_attribute_by_list_without_index_no_match(self):
-        ws_response = WSResponse().with_attribute("body[]colour", "yellow")
+        ws_response = WSResponse().with_attribute("body//colour", "yellow")
 
         test_data = {
             "body": [
@@ -216,7 +216,7 @@ class WSResponseTests(unittest.TestCase):  # noqa: pylint - too-many-public-meth
         self.assertFalse(ws_response.is_match(test_data))
 
     def test_resolved_attribute_by_just_list_index(self):
-        ws_response = WSResponse().with_attribute("body[0]", "red")
+        ws_response = WSResponse().with_attribute("body/0/", "red")
 
         test_data = {
             "body": [
@@ -229,7 +229,7 @@ class WSResponseTests(unittest.TestCase):  # noqa: pylint - too-many-public-meth
         self.assertTrue(ws_response.is_match(test_data))
 
     def test_resolve_by_index_when_dict_fails(self):
-        ws_response = WSResponse().with_attribute("body[0]colour", "red")
+        ws_response = WSResponse().with_attribute("body/0/colour", "red")
 
         test_data = {
             "body": {
