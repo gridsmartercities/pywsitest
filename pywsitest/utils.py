@@ -19,20 +19,26 @@ def get_resolved_values(response: [list, dict], path: str) -> List[object]:
     resolved = [response]
 
     for part in path.lstrip("/").split("/"):
+        # iterate to count rather than over objects as objects can be updated in-place
         count = len(resolved)
         for i in range(count):
             current = resolved[i]
             if isinstance(current, dict):
+                # update in-place with value at path or None
                 resolved[i] = current.get(part)
             elif isinstance(current, list):
+                # index has been supplied, update in-place with object at index or None
                 if part:
                     index, success = _to_int(part)
                     resolved[i] = current[index] if success and len(current) > index else None
                 else:
+                    # append new resolved objects to end of the list
                     for work in current:
                         resolved.append(work)
+                    # set current object to None so it gets filtered out at the end of the loop
                     resolved[i] = None
 
+        # essentially doing a mark and sweep to remove None values
         resolved = [r for r in resolved if r is not None]
 
     return resolved
