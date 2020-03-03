@@ -33,8 +33,8 @@ def get_resolved_values(response: [list, dict], path: str) -> List[object]:
                     resolved[i] = current[index] if success and len(current) > index else None
                 else:
                     # append new resolved objects to end of the list
-                    for work in current:
-                        resolved.append(work)
+                    for child in current:
+                        resolved.append(child)
                     # set current object to None so it gets filtered out at the end of the loop
                     resolved[i] = None
 
