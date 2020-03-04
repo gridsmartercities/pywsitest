@@ -81,6 +81,62 @@ await ws_test.run()
 assert ws_test.is_complete()
 ```
 
+Testing that a response with the following body with a list is received on connection to a websocket host:
+```json
+{
+    "body": [
+        {"colour": "red"},
+        {"colour": "green"},
+        {"colour": "blue"}
+    ]
+}
+```
+
+```py
+from pywsitest import WSTest, WSResponse
+
+ws_test = (
+    WSTest("wss://example.com")
+    .with_response(
+        WSResponse()
+        .with_attribute("body/0/colour", "red")
+        .with_attribute("body/1/colour", "green")
+        .with_attribute("body/2/colour", "blue")
+    )
+)
+
+await ws_test.run()
+
+assert ws_test.is_complete()
+```
+
+Testing that a response with the following body with a list containing the colour `green` somewhere is received on connection to a websocket host:
+```json
+{
+    "body": [
+        {"colour": "red"},
+        {"colour": "green"},
+        {"colour": "blue"}
+    ]
+}
+```
+
+```py
+from pywsitest import WSTest, WSResponse
+
+ws_test = (
+    WSTest("wss://example.com")
+    .with_response(
+        WSResponse()
+        .with_attribute("body//colour", "green")
+    )
+)
+
+await ws_test.run()
+
+assert ws_test.is_complete()
+```
+
 Sending a message on connection to a websocket host:
 ```py
 from pywsitest import WSTest, WSMessage
