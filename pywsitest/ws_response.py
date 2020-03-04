@@ -1,6 +1,6 @@
 import json
 
-from .utils import get_resolved_value
+from .utils import get_resolved_values
 from .ws_message import WSMessage
 
 
@@ -76,15 +76,17 @@ class WSResponse:
             (bool): True if the response matches based on the attributes
         """
         for key in self.attributes:
-            resolved_value = get_resolved_value(response, key)
+            resolved_values = get_resolved_values(response, key)
 
-            if resolved_value is None:
+            if not resolved_values:
                 return False
 
             if self.attributes[key] is None:
                 continue
 
-            if self.attributes[key] != resolved_value:
-                return False
+            if any(self.attributes[key] == value for value in resolved_values):
+                continue
+
+            return False
 
         return True

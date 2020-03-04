@@ -1,6 +1,6 @@
 import json
 
-from .utils import get_resolved_value, PATH_REGEX
+from .utils import get_resolved_values, PATH_REGEX
 
 
 class WSMessage:
@@ -74,6 +74,6 @@ class WSMessage:
             value = self.attributes[key]
             match = PATH_REGEX.match(str(value))
             if match:
-                resolved = get_resolved_value(response, match.group(1))
-                self.attributes[key] = resolved if resolved else value
+                resolved_values = get_resolved_values(response, match.group(1))
+                self.attributes[key] = resolved_values[0] if resolved_values else value
         return self

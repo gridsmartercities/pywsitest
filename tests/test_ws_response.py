@@ -3,7 +3,7 @@ import unittest
 from pywsitest import WSResponse, WSMessage
 
 
-class WSResponseTests(unittest.TestCase):
+class WSResponseTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
     def test_create_ws_response(self):
         ws_response = WSResponse()
@@ -133,6 +133,121 @@ class WSResponseTests(unittest.TestCase):
             "body": {
                 "attribute": "not_value"
             }
+        }
+
+        self.assertFalse(ws_response.is_match(test_data))
+
+    def test_resolved_recursive_attribute_match(self):
+        ws_response = WSResponse().with_attribute("body/first/second/third", "value")
+
+        test_data = {
+            "type": "new_request",
+            "body": {
+                "first": {
+                    "second": {
+                        "third": "value",
+                        "fourth": "not_value"
+                    }
+                }
+            }
+        }
+
+        self.assertTrue(ws_response.is_match(test_data))
+
+    def test_resolved_attribute_by_list_index(self):
+        ws_response = WSResponse().with_attribute("body/0/colour", "red")
+
+        test_data = {
+            "body": [
+                {"colour": "red"},
+                {"colour": "green"},
+                {"colour": "blue"}
+            ]
+        }
+
+        self.assertTrue(ws_response.is_match(test_data))
+
+    def test_resolved_attribute_by_list_without_index(self):
+        ws_response = WSResponse().with_attribute("body//colour", "green")
+
+        test_data = {
+            "body": [
+                {"colour": "red"},
+                {"colour": "green"},
+                {"colour": "blue"}
+            ]
+        }
+
+        self.assertTrue(ws_response.is_match(test_data))
+
+    def test_resolved_attribute_by_list_index_no_match(self):
+        ws_response = WSResponse().with_attribute("body/1/colour", "yellow")
+
+        test_data = {
+            "body": [
+                {"colour": "red"},
+                {"colour": "green"},
+                {"colour": "blue"}
+            ]
+        }
+
+        self.assertFalse(ws_response.is_match(test_data))
+
+    def test_resolved_attribute_by_list_index_not_enough_elements(self):
+        ws_response = WSResponse().with_attribute("body/0/colour", "red")
+
+        test_data = {
+            "body": []
+        }
+
+        self.assertFalse(ws_response.is_match(test_data))
+
+    def test_resolved_attribute_by_list_without_index_no_match(self):
+        ws_response = WSResponse().with_attribute("body//colour", "yellow")
+
+        test_data = {
+            "body": [
+                {"colour": "red"},
+                {"colour": "green"},
+                {"colour": "blue"}
+            ]
+        }
+
+        self.assertFalse(ws_response.is_match(test_data))
+
+    def test_resolved_attribute_by_just_list_index(self):
+        ws_response = WSResponse().with_attribute("body/0/", "red")
+
+        test_data = {
+            "body": [
+                "red",
+                "green",
+                "blue"
+            ]
+        }
+
+        self.assertTrue(ws_response.is_match(test_data))
+
+    def test_resolve_by_index_when_dict_fails(self):
+        ws_response = WSResponse().with_attribute("body/0/colour", "red")
+
+        test_data = {
+            "body": {
+                "colour": "red"
+            }
+        }
+
+        self.assertFalse(ws_response.is_match(test_data))
+
+    def test_resolve_by_key_when_list_fails(self):
+        ws_response = WSResponse().with_attribute("body/colour", "red")
+
+        test_data = {
+            "body": [
+                "red",
+                "green",
+                "blue"
+            ]
         }
 
         self.assertFalse(ws_response.is_match(test_data))
