@@ -50,3 +50,23 @@ class WSMessageTests(unittest.TestCase):
         ws_message = ws_message.resolve(response)
 
         self.assertEqual(expected_value, str(ws_message))
+
+    def test_resolve_list_attribute(self):
+        ws_message = (
+            WSMessage()
+            .with_attribute("colour", "${body/0/colour}")
+        )
+
+        response = {
+            "body": [
+                {"colour": "red"},
+                {"colour": "green"},
+                {"colour": "blue"}
+            ]
+        }
+
+        expected_value = "{\"colour\": \"red\"}"
+
+        ws_message = ws_message.resolve(response)
+
+        self.assertEqual(expected_value, str(ws_message))

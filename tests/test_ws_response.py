@@ -167,6 +167,19 @@ class WSResponseTests(unittest.TestCase):  # noqa: pylint - too-many-public-meth
 
         self.assertTrue(ws_response.is_match(test_data))
 
+    def test_resolved_attribute_by_list_index_without_value(self):
+        ws_response = WSResponse().with_attribute("body/0/colour")
+
+        test_data = {
+            "body": [
+                {"colour": "red"},
+                {"colour": "green"},
+                {"colour": "blue"}
+            ]
+        }
+
+        self.assertTrue(ws_response.is_match(test_data))
+
     def test_resolved_attribute_by_list_without_index(self):
         ws_response = WSResponse().with_attribute("body//colour", "green")
 
