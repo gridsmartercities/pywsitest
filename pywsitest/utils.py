@@ -18,7 +18,7 @@ def get_resolved_values(response: dict, path: str) -> List[object]:
     """
     resolved = [response]
 
-    for part in path.strip("/").split("/"):
+    for part in path.lstrip("/").split("/"):
         # iterate to count rather than over objects as objects can be updated in-place
         count = len(resolved)
         for i in range(count):
