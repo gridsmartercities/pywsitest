@@ -18,11 +18,8 @@ def get_resolved_values(response: [dict, list], path: str) -> List[object]:
     """
     resolved = [response]
 
-    # handle cases where response is a list and an index is not provided
-    original_path = path
-    path = path.lstrip("/")
-    if isinstance(response, list) and original_path.startswith("//"):
-        path = f"/{path}"
+    if path.startswith("/"):
+        path = path[1:]
 
     for part in path.split("/"):
         # iterate to count rather than over objects as objects can be updated in-place
