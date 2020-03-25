@@ -79,6 +79,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.response_timeout = 10.0
         self.message_timeout = 10.0
         self.test_timeout = 60.0
+        self.log_responses_on_error = False
 
     def with_parameter(self, key: str, value: object) -> "WSTest":
         """
@@ -160,6 +161,16 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.test_timeout = timeout
         return self
 
+    def with_received_response_logging(self) -> "WSTest":
+        """
+        Enables received response logging when an exception is thrown
+
+        Returns:
+            (WSTest): The WSTest instance set_log_responses_on_error was called on
+        """
+        self.log_responses_on_error = True
+        return self
+
     async def run(self):
         """
         Runs the integration tests
@@ -238,6 +249,12 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         error_message = "Timed out waiting for responses:"
         for response in self.expected_responses:
             error_message += "\n" + str(response)
+
+        if self.log_responses_on_error:
+            error_message += "\nReceived responses:"
+            for json_response in self.received_json:
+                error_message += "\n" + str(json_response)
+
         return error_message
 
     def is_complete(self) -> bool:
