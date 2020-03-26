@@ -23,7 +23,7 @@ WSTest is the main test running class in pywsitest. It currently has the followi
 - **with_response_timeout**: set the timeout in seconds for the test runner to wait for a response from the websocket
 - **with_message_timeout**: set the timeout in seconds for the test runner to wait while trying to send a message to the websocket
 - **with_test_timeout**: set the timeout in seconds for the test runner to run for
-- **withwith_received_response_logging**: enable logging of received responses on response timeout error
+- **with_received_response_logging**: enable logging of received responses on response timeout error
 - **run**: asyncronously run the test runner, sending all messages and listening for responses
 - **is_complete**: check whether all expected responses have been received and messages have been sent
 
