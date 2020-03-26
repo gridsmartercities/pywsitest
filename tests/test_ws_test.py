@@ -269,6 +269,82 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
     @patch("websockets.connect")
     @patch("ssl.SSLContext")
     @syncify
+    async def test_websocket_response_timeout_with_received_response_logging_enabled(self, mock_ssl, mock_websockets):
+        ws_tester = (
+            WSTest("wss://example.com")
+            .with_response_timeout(0.1)
+            .with_received_response_logging()
+            .with_response(
+                WSResponse()
+                .with_attribute("message", "hello")
+            )
+        )
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        first_future = asyncio.Future()
+        first_future.set_result(json.dumps({"message": "bye"}))
+
+        mock_socket.recv = MagicMock(side_effect=[first_future, asyncio.Future()])
+
+        mock_websockets.return_value = asyncio.Future()
+        mock_websockets.return_value.set_result(mock_socket)
+
+        ssl_context = MagicMock()
+        mock_ssl.return_value = ssl_context
+
+        with self.assertRaises(WSTimeoutError) as ex:
+            await ws_tester.run()
+
+        expected_error = (
+            "Timed out waiting for responses:\n{\"message\": \"hello\"}\n" +
+            "Received responses:\n{\"message\": \"bye\"}"
+        )
+        self.assertEqual(expected_error, str(ex.exception))
+
+        mock_socket.close.assert_called_once()
+
+    @patch("websockets.connect")
+    @patch("ssl.SSLContext")
+    @syncify
+    async def test_websocket_response_timeout_with_received_response_logging_disabled(self, mock_ssl, mock_websockets):
+        ws_tester = (
+            WSTest("wss://example.com")
+            .with_response_timeout(0.1)
+            .with_response(
+                WSResponse()
+                .with_attribute("message", "hello")
+            )
+        )
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        first_future = asyncio.Future()
+        first_future.set_result(json.dumps({"message": "bye"}))
+
+        mock_socket.recv = MagicMock(side_effect=[first_future, asyncio.Future()])
+
+        mock_websockets.return_value = asyncio.Future()
+        mock_websockets.return_value.set_result(mock_socket)
+
+        ssl_context = MagicMock()
+        mock_ssl.return_value = ssl_context
+
+        with self.assertRaises(WSTimeoutError) as ex:
+            await ws_tester.run()
+
+        expected_error = "Timed out waiting for responses:\n{\"message\": \"hello\"}"
+        self.assertEqual(expected_error, str(ex.exception))
+
+        mock_socket.close.assert_called_once()
+
+    @patch("websockets.connect")
+    @patch("ssl.SSLContext")
+    @syncify
     async def test_websocket_message_timeout(self, mock_ssl, mock_websockets):
         ws_tester = (
             WSTest("wss://example.com")
