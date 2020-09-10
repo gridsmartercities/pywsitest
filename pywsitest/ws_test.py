@@ -8,6 +8,7 @@ from websockets.client import WebSocketClientProtocol
 from .ws_message import WSMessage
 from .ws_response import WSResponse
 from .ws_timeout_error import WSTimeoutError
+from .rest_request import RestRequest
 
 
 class WSTest:  # noqa: pylint - too-many-instance-attributes
@@ -72,12 +73,16 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.uri = uri
         self.parameters = {}
         self.messages = []
+        self.requests = []
         self.sent_messages = []
+        self.sent_requests = []
         self.expected_responses = []
         self.received_responses = []
         self.received_json = []
+        self.received_request_responses = []
         self.response_timeout = 10.0
         self.message_timeout = 10.0
+        self.request_timeout = 10.0
         self.test_timeout = 60.0
         self.log_responses_on_error = False
 
@@ -148,6 +153,10 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.message_timeout = timeout
         return self
 
+    def with_request_timeout(self, timeout: float) -> "WSTest":
+        self.request_timeout = timeout
+        return self
+
     def with_test_timeout(self, timeout: float) -> "WSTest":
         """
         Sets the test timeout in seconds
@@ -169,6 +178,10 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             (WSTest): The WSTest instance set_log_responses_on_error was called on
         """
         self.log_responses_on_error = True
+        return self
+
+    def with_request(self, request: RestRequest) -> "WSTest":
+        self.requests.append(request)
         return self
 
     async def run(self):
@@ -193,7 +206,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             await websocket.close()
 
     async def _runner(self, websocket: WebSocketClientProtocol):
-        await asyncio.gather(self._receive(websocket), self._send(websocket))
+        await asyncio.gather(self._receive(websocket), self._send(websocket), self._request())
 
     async def _receive(self, websocket: WebSocketClientProtocol):
         # iterate while there are still expected responses that haven't been received yet
@@ -229,11 +242,31 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     async def _send_handler(self, websocket: WebSocketClientProtocol, message: WSMessage):
         try:
             if message.delay:
-                time.sleep(message.delay)
+                await asyncio.sleep(message.delay)
             await asyncio.wait_for(websocket.send(str(message)), timeout=self.message_timeout)
             self.sent_messages.append(message)
         except asyncio.TimeoutError as ex:
             error_message = "Timed out trying to send message:\n" + str(message)
+            raise WSTimeoutError(error_message) from ex
+
+    async def _request(self):
+        while self.requests:
+            request = self.requests.pop(0)
+            await self._request_handler(request)
+
+    async def _request_handler(self, request: RestRequest):
+        try:
+            if request.delay:
+                await asyncio.sleep(request.delay)
+
+            async def handle():
+                response = request.send()
+                self.received_request_responses.append(response)
+
+            await asyncio.wait_for(handle(), timeout=self.request_timeout)
+            self.sent_requests.append(request)
+        except asyncio.TimeoutError as ex:
+            error_message = "Timed out trying to send request:\n" + str(request)
             raise WSTimeoutError(error_message) from ex
 
     def _get_connection_string(self) -> str:
@@ -264,4 +297,4 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         Returns:
             (bool): Value to indicate whether the test has finished
         """
-        return not self.expected_responses and not self.messages
+        return not self.expected_responses and not self.messages and not self.requests

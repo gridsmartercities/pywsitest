@@ -23,4 +23,10 @@ class RestRequest:
         return self
 
     def send(self):
-        return requests.request(self.method, self.uri, headers=self.headers, json=self.body)
+        kwargs = {}
+        if self.headers:
+            kwargs["headers"] = self.headers
+        if self.body:
+            kwargs["json"] = self.body
+
+        return requests.request(self.method, self.uri, **kwargs)
