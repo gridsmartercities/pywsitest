@@ -106,5 +106,8 @@ venv.bak/
 # vs code
 .vscode/
 
+# pycharm
+.idea/
+
 # coverage report
 coverage_report.sh
