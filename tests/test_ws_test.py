@@ -1,9 +1,9 @@
 import asyncio
 import json
-import time
 import unittest
 from unittest.mock import patch, MagicMock
 
+from requests.exceptions import ConnectTimeout
 from pywsitest import WSTest, WSResponse, WSMessage, WSTimeoutError, RestRequest
 
 
@@ -655,7 +655,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
         mock_websockets.assert_called_once_with("ws://example.com", ssl=None)
         mock_socket.close.assert_called_once()
 
-        mock_requests.assert_called_once_with("get", "https://example.com")
+        mock_requests.assert_called_once_with("get", "https://example.com", timeout=10.0)
         self.assertEqual(1, len(ws_tester.received_request_responses))
         self.assertEqual(mock_request_response, ws_tester.received_request_responses[0])
 
@@ -689,32 +689,29 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
         mock_websockets.assert_called_once_with("ws://example.com", ssl=None)
         mock_socket.close.assert_called_once()
 
-        mock_requests.assert_called_once_with("get", "https://example.com")
+        mock_requests.assert_called_once_with("get", "https://example.com", timeout=10.0)
 
         mock_sleep.assert_called_once_with(3.0)
 
         self.assertTrue(ws_tester.is_complete())
 
-    # @syncify
-    # @patch("websockets.connect")
-    # @patch("requests.request")
-    # async def test_connect_with_rest_request_with_timeout(self, mock_requests, mock_websockets):
-    #     request = RestRequest("https://example.com", "GET")
-    #
-    #     ws_tester = WSTest("ws://example.com").with_request_timeout(0.1).with_request(request)
-    #
-    #     async def sleep(*args):
-    #         await asyncio.sleep(10)
-    #
-    #     mock_requests.return_value = sleep
-    #
-    #     mock_socket = MagicMock()
-    #     mock_socket.close = MagicMock(return_value=asyncio.Future())
-    #     mock_socket.close.return_value.set_result(MagicMock())
-    #     mock_websockets.return_value = asyncio.Future()
-    #     mock_websockets.return_value.set_result(mock_socket)
-    #
-    #     self.assertEqual(ws_tester.request_timeout, 0.1)
-    #     with self.assertRaises(WSTimeoutError):
-    #         await ws_tester.run()
-    #     mock_socket.close.assert_called_once()
+    @syncify
+    @patch("websockets.connect")
+    @patch("requests.request")
+    async def test_connect_with_rest_request_with_timeout(self, mock_requests, mock_websockets):
+        request = RestRequest("https://example.com", "GET")
+
+        ws_tester = WSTest("ws://example.com").with_request_timeout(0.1).with_request(request)
+
+        mock_requests.side_effect = ConnectTimeout("test error")
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+        mock_websockets.return_value = asyncio.Future()
+        mock_websockets.return_value.set_result(mock_socket)
+
+        self.assertEqual(ws_tester.request_timeout, 0.1)
+        with self.assertRaises(WSTimeoutError):
+            await ws_tester.run()
+        mock_socket.close.assert_called_once()

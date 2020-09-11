@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 
 from pywsitest import RestRequest
 
+
 class RestRequestTests(unittest.TestCase):
 
     def test_create_rest_request_with_uri_and_method(self):
@@ -52,16 +53,15 @@ class RestRequestTests(unittest.TestCase):
             .with_body({"abc": 123})
         )
 
-        def mock_handler(method, uri, json, headers):
+        def mock_handler(*args, **kwargs):  # pylint:disable=unused-argument
             mock_response = MagicMock()
-            mock_response.status_code = "OK"
-            mock_response.json.return_value = json
+            mock_response.status_code = 200
+            mock_response.json.return_value = kwargs.get("json")
             return mock_response
 
         with patch("requests.request") as mock_request:
             mock_request.side_effect = mock_handler
-            response = rest_request.send()
+            response = rest_request.send(10)
 
-        self.assertEqual(response.status_code, "OK")
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"abc": 123})
-

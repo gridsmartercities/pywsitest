@@ -22,8 +22,8 @@ class RestRequest:
         self.delay = delay
         return self
 
-    def send(self):
-        kwargs = {}
+    def send(self, timeout: float):
+        kwargs = {"timeout": timeout}
         if self.headers:
             kwargs["headers"] = self.headers
         if self.body:

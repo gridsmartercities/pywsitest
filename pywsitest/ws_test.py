@@ -1,7 +1,8 @@
 import asyncio
 import json
 import ssl
-import time
+
+from requests.exceptions import ConnectTimeout, ReadTimeout
 import websockets
 from websockets.client import WebSocketClientProtocol
 
@@ -259,13 +260,12 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             if request.delay:
                 await asyncio.sleep(request.delay)
 
-            async def handle():
-                response = request.send()
-                self.received_request_responses.append(response)
+            response = request.send(self.request_timeout)
 
-            await asyncio.wait_for(handle(), timeout=self.request_timeout)
+            self.received_request_responses.append(response)
             self.sent_requests.append(request)
-        except asyncio.TimeoutError as ex:
+
+        except (ConnectTimeout, ReadTimeout) as ex:
             error_message = "Timed out trying to send request:\n" + str(request)
             raise WSTimeoutError(error_message) from ex
 
