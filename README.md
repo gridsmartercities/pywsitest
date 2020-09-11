@@ -22,8 +22,10 @@ WSTest is the main test running class in pywsitest. It currently has the followi
 - **with_message**: add a message for the test runner to send on connection
 - **with_response_timeout**: set the timeout in seconds for the test runner to wait for a response from the websocket
 - **with_message_timeout**: set the timeout in seconds for the test runner to wait while trying to send a message to the websocket
+- **with_request_timeout**: set the timeout in seconds for the rest request attached to the instance of this class
 - **with_test_timeout**: set the timeout in seconds for the test runner to run for
 - **with_received_response_logging**: enable logging of received responses on response timeout error
+- **with_request**: attach a rest api request to the instance of this class
 - **run**: asyncronously run the test runner, sending all messages and listening for responses
 - **is_complete**: check whether all expected responses have been received and messages have been sent
 
@@ -37,6 +39,12 @@ WSResponse is a class to represent an expected response from the websocket
 WSMessage is a class to represent a message to send to the websocket
 - **with_attribute**: add an attribute to the message to be sent to the websocket host
 - **with_delay**: add a delay to the message to be sent to the websocket host
+
+### [RestRequest](https://github.com/gridsmartercities/pywsitest/blob/master/pywsitest/rest_request.py)
+RestRequest is a class to represent a request to send to rest api
+- **with_header**: add a header to the request to be sent to the rest api
+- **with_body**: add a body to the request to be sent to the rest api
+- **with_delay**: add a delay to the request to be sent to the rest api
 
 ## Examples
 
@@ -214,6 +222,26 @@ ws_test = (
 )
 
 await ws_test.run()
+
+assert ws_test.is_complete()
+```
+
+### Using rest requests
+Attaching simple rest get request and sending it:
+```py
+rest_request = (
+    RestRequest("https://example.com", "GET")
+    .with_body({"some_key": some_value})
+)
+
+ws_test = (
+    WSTest("wss://example.com")
+    .with_request(rest_request)
+)
+
+await ws_test.run()
+
+respone = ws_tester.received_request_responses[0]
 
 assert ws_test.is_complete()
 ```
