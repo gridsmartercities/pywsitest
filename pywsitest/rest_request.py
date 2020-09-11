@@ -27,7 +27,7 @@ class RestRequest:
             RestRequest("https://example.com", "POST")
             .with_header("Authorization", "jwt_token")
             .with_body({"abc": 123})
-            .with_delay(10.0)
+            .with_delay(1.0)
         )
 
         rest_request.send(10.0)

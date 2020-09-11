@@ -20,12 +20,12 @@ WSTest is the main test running class in pywsitest. It currently has the followi
 - **with_parameter**: add a query parameter to the connection
 - **with_response**: add an expected response to the test runner
 - **with_message**: add a message for the test runner to send on connection
+- **with_request**: attach a rest api request to the instance of this class
 - **with_response_timeout**: set the timeout in seconds for the test runner to wait for a response from the websocket
 - **with_message_timeout**: set the timeout in seconds for the test runner to wait while trying to send a message to the websocket
 - **with_request_timeout**: set the timeout in seconds for the rest request attached to the instance of this class
 - **with_test_timeout**: set the timeout in seconds for the test runner to run for
 - **with_received_response_logging**: enable logging of received responses on response timeout error
-- **with_request**: attach a rest api request to the instance of this class
 - **run**: asyncronously run the test runner, sending all messages and listening for responses
 - **is_complete**: check whether all expected responses have been received and messages have been sent
 
@@ -241,7 +241,9 @@ ws_test = (
 
 await ws_test.run()
 
-respone = ws_tester.received_request_responses[0]
+for response in ws_tester.received_request_responses:
+    print(response.status_code)
+    print(response.json())
 
 assert ws_test.is_complete()
 ```
