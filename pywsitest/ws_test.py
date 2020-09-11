@@ -20,12 +20,16 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         uri (str)
         parameters (dict)
         messages (list)
+        requests (list)
         sent_messages (list)
+        sent_requests (list)
         expected_responses (list)
         received_responses (list)
         received_json (list)
+        received_request_responses (list)
         response_timeout (float)
         message_timeout (float)
+        request_timeout (float)
         test_timeout (float)
 
     Methods:
@@ -39,8 +43,14 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             Sets the response timeout in seconds and returns the WSTest
         with_message_timeout(timeout: float):
             Sets the message timeout in seconds and returns the WSTest
+        with_request_timeout(timeout: float):
+            Sets the request timeout in seconds and returns the WSTest
         with_test_timeout(timeout: float):
             Sets the overall test timeout in seconds and returns the WSTest
+        with_received_response_logging():
+            Enables websocket received response logging and returns the WSTest
+        with_request(request: RestRequest):
+            Adds a rest request and returns the WSTest
         async run():
             Runs the websocket tester with the current configuration
         is_complete():
@@ -155,6 +165,15 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         return self
 
     def with_request_timeout(self, timeout: float) -> "WSTest":
+        """
+        Sets the rest request timeout in seconds
+
+        Parameters:
+            timeout (float): The time to wait for a request response in seconds
+
+        Returns:
+            (WSTest): The WSTest instance with_request_timeout was called on
+        """
         self.request_timeout = timeout
         return self
 
@@ -182,6 +201,15 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         return self
 
     def with_request(self, request: RestRequest) -> "WSTest":
+        """
+        Sets Rest request on a websocket object
+
+        Parameters:
+            request (RestRequest): The request object with all relevant data for rest request execution
+
+        Returns:
+            (WSTest): The WSTest instance with_request was called on
+        """
         self.requests.append(request)
         return self
 
