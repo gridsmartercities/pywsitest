@@ -71,6 +71,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         """
         self.uri = uri
         self.parameters = {}
+        self.headers = {}
         self.messages = []
         self.sent_messages = []
         self.expected_responses = []
@@ -94,6 +95,21 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             (WSTest): The WSTest instance with_parameter was called on
         """
         self.parameters[key] = value
+        return self
+
+    def with_header(self, key: str, value: object) -> "WSTest":
+        """
+        Adds a key/value pair to the headers dictionary
+        Headers are passed to the websockets connect method
+
+        Parameters:
+            key (str): The key/name of the header
+            value (obj): The value of the header
+
+        Returns:
+            (WSTest): The WSTest instance with_header was called on
+        """
+        self.headers[key] = value
         return self
 
     def with_response(self, response: WSResponse) -> "WSTest":
@@ -180,9 +196,18 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         Raises:
             WSTimeoutError: If the test/sending/receiving fails to finish within the time limit
         """
+        kwargs = {}
         connection_string = self._get_connection_string()
-        ssl_context = ssl.SSLContext() if connection_string.startswith("wss://") else None
-        websocket = await websockets.connect(connection_string, ssl=ssl_context)
+
+        # add ssl if using wss
+        if connection_string.startswith("wss://"):
+            kwargs["ssl"] = ssl.SSLContext()
+
+        # add headers if headers are set
+        if self.headers:
+            kwargs["extra_headers"] = self.headers
+
+        websocket = await websockets.connect(connection_string, **kwargs)
 
         try:
             # Run the receive and send methods async with a timeout
@@ -240,10 +265,9 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         # wss://example.com?first=123&second=456
         connection_string = self.uri.strip()
         if self.parameters:
-            connection_string += "?"
-        for key in self.parameters:
-            connection_string += str(key).strip() + "=" + str(self.parameters[key]).strip() + "&"
-        return connection_string.strip("&")
+            params = "&".join(f"{str(key).strip()}={str(value).strip()}" for key, value in self.parameters.items())
+            connection_string += f"?{params}"
+        return connection_string
 
     def _get_receive_error_message(self) -> str:
         error_message = "Timed out waiting for responses:"
