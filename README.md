@@ -20,9 +20,12 @@ WSTest is the main test running class in pywsitest. It currently has the followi
 - **with_parameter**: add a query parameter to the connection
 - **with_response**: add an expected response to the test runner
 - **with_message**: add a message for the test runner to send on connection
+- **with_request**: attach a rest api request to the instance of this class
 - **with_response_timeout**: set the timeout in seconds for the test runner to wait for a response from the websocket
 - **with_message_timeout**: set the timeout in seconds for the test runner to wait while trying to send a message to the websocket
+- **with_request_timeout**: set the timeout in seconds for the rest request attached to the instance of this class
 - **with_test_timeout**: set the timeout in seconds for the test runner to run for
+- **with_received_response_logging**: enable logging of received responses on response timeout error
 - **run**: asyncronously run the test runner, sending all messages and listening for responses
 - **is_complete**: check whether all expected responses have been received and messages have been sent
 
@@ -37,7 +40,15 @@ WSMessage is a class to represent a message to send to the websocket
 - **with_attribute**: add an attribute to the message to be sent to the websocket host
 - **with_delay**: add a delay to the message to be sent to the websocket host
 
+### [RestRequest](https://github.com/gridsmartercities/pywsitest/blob/master/pywsitest/rest_request.py)
+RestRequest is a class to represent a request to send to rest api
+- **with_header**: add a header to the request to be sent to the rest api
+- **with_body**: add a body to the request to be sent to the rest api
+- **with_delay**: add a delay to the request to be sent to the rest api
+
 ## Examples
+
+### Response testing
 Testing a response with a body is received on connection to a websocket host:
 ```py
 from pywsitest import WSTest, WSResponse
@@ -137,6 +148,7 @@ await ws_test.run()
 assert ws_test.is_complete()
 ```
 
+### Message sending
 Sending a message on connection to a websocket host:
 ```py
 from pywsitest import WSTest, WSMessage
@@ -183,7 +195,7 @@ await ws_test.run()
 assert ws_test.is_complete()
 ```
 
-Triggering a message to be sent with extracted list data when the following response is received:
+Triggering a message to be sent with the first colour extracted from a list when the following response is received:
 ```json
 {
     "body": [
@@ -206,6 +218,81 @@ ws_test = (
             WSMessage()
             .with_attribute("body", "${body/0/colour}")
         )
+    )
+)
+
+await ws_test.run()
+
+assert ws_test.is_complete()
+```
+
+### Using rest requests
+Attaching simple rest get request and sending it:
+```py
+rest_request = (
+    RestRequest("https://example.com", "GET")
+    .with_body({"some_key": some_value})
+)
+
+ws_test = (
+    WSTest("wss://example.com")
+    .with_request(rest_request)
+)
+
+await ws_test.run()
+
+for response in ws_tester.received_request_responses:
+    print(response.status_code)
+    print(response.json())
+
+assert ws_test.is_complete()
+```
+
+### Error handling
+Force a test to fail is execution takes more than 30 seconds (default 60 seconds)
+```py
+ws_test = (
+    WSTest("wss://example.com")
+    .with_test_timeout(30)
+    .with_response(
+        WSResponse()
+        .with_attribute("body")
+    )
+)
+
+await ws_test.run()
+
+assert ws_test.is_complete()
+```
+
+Force a test to fail if no response is received for 15 seconds (default 10 seconds) 
+- Any responses that haven't been sent will be output along with the `WSTimeoutError`
+- Received responses can be output too by calling `with_received_response_logging` on the `WSTest` instance
+```py
+ws_test = (
+    WSTest("wss://example.com")
+    .with_response_timeout(15)
+    .with_received_response_logging()
+    .with_response(
+        WSResponse()
+        .with_attribute("body")
+    )
+)
+
+await ws_test.run()
+
+assert ws_test.is_complete()
+```
+
+Force a test to fail is a message takes longer than 15 seconds to send (default 10 seconds)
+- The message that the test runner failed to send will be output along with the `WSTimeoutError`
+```py
+ws_test = (
+    WSTest("wss://example.com")
+    .with_message_timeout(15)
+    .with_message(
+        WSMessage()
+        .with_attribute("body", "Hello, world!")
     )
 )
 

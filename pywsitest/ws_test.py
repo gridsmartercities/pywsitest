@@ -1,13 +1,15 @@
 import asyncio
 import json
 import ssl
-import time
+
+from requests.exceptions import ConnectTimeout, ReadTimeout
 import websockets
 from websockets.client import WebSocketClientProtocol
 
 from .ws_message import WSMessage
 from .ws_response import WSResponse
 from .ws_timeout_error import WSTimeoutError
+from .rest_request import RestRequest
 
 
 class WSTest:  # noqa: pylint - too-many-instance-attributes
@@ -18,12 +20,16 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         uri (str)
         parameters (dict)
         messages (list)
+        requests (list)
         sent_messages (list)
+        sent_requests (list)
         expected_responses (list)
         received_responses (list)
         received_json (list)
+        received_request_responses (list)
         response_timeout (float)
         message_timeout (float)
+        request_timeout (float)
         test_timeout (float)
 
     Methods:
@@ -37,8 +43,14 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             Sets the response timeout in seconds and returns the WSTest
         with_message_timeout(timeout: float):
             Sets the message timeout in seconds and returns the WSTest
+        with_request_timeout(timeout: float):
+            Sets the request timeout in seconds and returns the WSTest
         with_test_timeout(timeout: float):
             Sets the overall test timeout in seconds and returns the WSTest
+        with_received_response_logging():
+            Enables websocket received response logging and returns the WSTest
+        with_request(request: RestRequest):
+            Adds a rest request and returns the WSTest
         async run():
             Runs the websocket tester with the current configuration
         is_complete():
@@ -72,13 +84,18 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.uri = uri
         self.parameters = {}
         self.messages = []
+        self.requests = []
         self.sent_messages = []
+        self.sent_requests = []
         self.expected_responses = []
         self.received_responses = []
         self.received_json = []
+        self.received_request_responses = []
         self.response_timeout = 10.0
         self.message_timeout = 10.0
+        self.request_timeout = 10.0
         self.test_timeout = 60.0
+        self.log_responses_on_error = False
 
     def with_parameter(self, key: str, value: object) -> "WSTest":
         """
@@ -147,6 +164,19 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.message_timeout = timeout
         return self
 
+    def with_request_timeout(self, timeout: float) -> "WSTest":
+        """
+        Sets the rest request timeout in seconds
+
+        Parameters:
+            timeout (float): The time to wait for a request response in seconds
+
+        Returns:
+            (WSTest): The WSTest instance with_request_timeout was called on
+        """
+        self.request_timeout = timeout
+        return self
+
     def with_test_timeout(self, timeout: float) -> "WSTest":
         """
         Sets the test timeout in seconds
@@ -158,6 +188,29 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             (WSTest): The WSTest instance with_test_timeout was called on
         """
         self.test_timeout = timeout
+        return self
+
+    def with_received_response_logging(self) -> "WSTest":
+        """
+        Enables received response logging when an exception is thrown
+
+        Returns:
+            (WSTest): The WSTest instance set_log_responses_on_error was called on
+        """
+        self.log_responses_on_error = True
+        return self
+
+    def with_request(self, request: RestRequest) -> "WSTest":
+        """
+        Sets Rest request on a websocket object
+
+        Parameters:
+            request (RestRequest): The request object with all relevant data for rest request execution
+
+        Returns:
+            (WSTest): The WSTest instance with_request was called on
+        """
+        self.requests.append(request)
         return self
 
     async def run(self):
@@ -182,7 +235,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
             await websocket.close()
 
     async def _runner(self, websocket: WebSocketClientProtocol):
-        await asyncio.gather(self._receive(websocket), self._send(websocket))
+        await asyncio.gather(self._receive(websocket), self._send(websocket), self._request())
 
     async def _receive(self, websocket: WebSocketClientProtocol):
         # iterate while there are still expected responses that haven't been received yet
@@ -218,11 +271,30 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
     async def _send_handler(self, websocket: WebSocketClientProtocol, message: WSMessage):
         try:
             if message.delay:
-                time.sleep(message.delay)
+                await asyncio.sleep(message.delay)
             await asyncio.wait_for(websocket.send(str(message)), timeout=self.message_timeout)
             self.sent_messages.append(message)
         except asyncio.TimeoutError as ex:
             error_message = "Timed out trying to send message:\n" + str(message)
+            raise WSTimeoutError(error_message) from ex
+
+    async def _request(self):
+        while self.requests:
+            request = self.requests.pop(0)
+            await self._request_handler(request)
+
+    async def _request_handler(self, request: RestRequest):
+        try:
+            if request.delay:
+                await asyncio.sleep(request.delay)
+
+            response = request.send(self.request_timeout)
+
+            self.received_request_responses.append(response)
+            self.sent_requests.append(request)
+
+        except (ConnectTimeout, ReadTimeout) as ex:
+            error_message = "Timed out trying to send request:\n" + str(request)
             raise WSTimeoutError(error_message) from ex
 
     def _get_connection_string(self) -> str:
@@ -238,6 +310,12 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         error_message = "Timed out waiting for responses:"
         for response in self.expected_responses:
             error_message += "\n" + str(response)
+
+        if self.log_responses_on_error:
+            error_message += "\nReceived responses:"
+            for json_response in self.received_json:
+                error_message += "\n" + str(json_response)
+
         return error_message
 
     def is_complete(self) -> bool:
@@ -247,4 +325,4 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         Returns:
             (bool): Value to indicate whether the test has finished
         """
-        return not self.expected_responses and not self.messages
+        return not self.expected_responses and not self.messages and not self.requests
