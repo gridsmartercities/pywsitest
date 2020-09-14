@@ -682,7 +682,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
         await ws_tester.run()
 
-        mock_websockets.assert_called_once_with("ws://example.com", ssl=None)
+        mock_websockets.assert_called_once_with("ws://example.com")
         mock_socket.close.assert_called_once()
 
         mock_requests.assert_called_once_with("get", "https://example.com", timeout=10.0)
@@ -716,7 +716,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
         await ws_tester.run()
 
-        mock_websockets.assert_called_once_with("ws://example.com", ssl=None)
+        mock_websockets.assert_called_once_with("ws://example.com")
         mock_socket.close.assert_called_once()
 
         mock_requests.assert_called_once_with("get", "https://example.com", timeout=10.0)
