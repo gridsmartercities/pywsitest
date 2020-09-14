@@ -1,16 +1,16 @@
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 
 PATH_REGEX = re.compile(r"^\$\{(.*)\}$")
 
 
-def get_resolved_values(response: dict, path: str) -> List[object]:
+def get_resolved_values(response: Union[dict, list], path: str) -> List[object]:
     """
     Retrieves a list of values from a dictionary at a given path
 
     Parameters:
-        response (dict): The response to check against for values
+        response (dict, list): The response to check against for values
         path (str): The path in the response to check for values
 
     Returns:
@@ -18,7 +18,10 @@ def get_resolved_values(response: dict, path: str) -> List[object]:
     """
     resolved = [response]
 
-    for part in path.lstrip("/").split("/"):
+    if path.startswith("/"):
+        path = path[1:]
+
+    for part in path.split("/"):
         # iterate to count rather than over objects as objects can be updated in-place
         count = len(resolved)
         for i in range(count):

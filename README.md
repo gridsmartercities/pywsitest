@@ -18,6 +18,7 @@ pip install pywsitest
 ### [WSTest](https://github.com/gridsmartercities/pywsitest/blob/master/pywsitest/ws_test.py)
 WSTest is the main test running class in pywsitest. It currently has the following methods:
 - **with_parameter**: add a query parameter to the connection
+- **with_header**: add a header to the connection
 - **with_response**: add an expected response to the test runner
 - **with_message**: add a message for the test runner to send on connection
 - **with_request**: attach a rest api request to the instance of this class
