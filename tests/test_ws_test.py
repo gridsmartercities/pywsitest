@@ -120,7 +120,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
         await ws_tester.run()
 
-        mock_websockets.assert_called_once_with("ws://example.com", ssl=None)
+        mock_websockets.assert_called_once_with("ws://example.com")
         mock_socket.close.assert_called_once()
 
     @patch("websockets.connect")
@@ -148,6 +148,36 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
         await ws_tester.run()
 
         mock_websockets.assert_called_once_with(expected_uri, ssl=ssl_context)
+        mock_socket.close.assert_called_once()
+
+    @patch("websockets.connect")
+    @patch("ssl.SSLContext")
+    @syncify
+    async def test_websocket_connect_with_headers(self, mock_ssl, mock_websockets):
+        ws_tester = (
+            WSTest("wss://example.com")
+            .with_header("example", 123)
+            .with_header("test", 456)
+        )
+
+        mock_socket = MagicMock()
+        mock_socket.close = MagicMock(return_value=asyncio.Future())
+        mock_socket.close.return_value.set_result(MagicMock())
+
+        mock_websockets.return_value = asyncio.Future()
+        mock_websockets.return_value.set_result(mock_socket)
+
+        ssl_context = MagicMock()
+        mock_ssl.return_value = ssl_context
+
+        expected_headers = {
+            "example": 123,
+            "test": 456
+        }
+
+        await ws_tester.run()
+
+        mock_websockets.assert_called_once_with("wss://example.com", ssl=ssl_context, extra_headers=expected_headers)
         mock_socket.close.assert_called_once()
 
     def test_websocket_with_expected_response(self):
@@ -652,7 +682,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
         await ws_tester.run()
 
-        mock_websockets.assert_called_once_with("ws://example.com", ssl=None)
+        mock_websockets.assert_called_once_with("ws://example.com")
         mock_socket.close.assert_called_once()
 
         mock_requests.assert_called_once_with("get", "https://example.com", timeout=10.0)
@@ -686,7 +716,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
         await ws_tester.run()
 
-        mock_websockets.assert_called_once_with("ws://example.com", ssl=None)
+        mock_websockets.assert_called_once_with("ws://example.com")
         mock_socket.close.assert_called_once()
 
         mock_requests.assert_called_once_with("get", "https://example.com", timeout=10.0)
