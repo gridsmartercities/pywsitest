@@ -1,11 +1,11 @@
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 
 PATH_REGEX = re.compile(r"^\$\{(.*)\}$")
 
 
-def get_resolved_values(response: [dict, list], path: str) -> List[object]:
+def get_resolved_values(response: Union[dict, list], path: str) -> List[object]:
     """
     Retrieves a list of values from a dictionary at a given path
 
