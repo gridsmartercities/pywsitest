@@ -631,9 +631,9 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
         self.assertFalse(ws_tester.is_complete())
 
-    @syncify
     @patch("websockets.connect")
     @patch("requests.request")
+    @syncify
     async def test_connect_with_rest_request(self, mock_requests, mock_websockets):
         request = RestRequest("https://example.com", "GET")
 
@@ -661,10 +661,10 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
         self.assertTrue(ws_tester.is_complete())
 
-    @syncify
     @patch("asyncio.sleep")
     @patch("websockets.connect")
     @patch("requests.request")
+    @syncify
     async def test_connect_with_rest_request_with_delay(self, mock_requests, mock_websockets, mock_sleep):
         request = RestRequest("https://example.com", "GET").with_delay(3.0)
 
@@ -695,9 +695,9 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
         self.assertTrue(ws_tester.is_complete())
 
-    @syncify
     @patch("websockets.connect")
     @patch("requests.request")
+    @syncify
     async def test_connect_with_rest_request_with_timeout(self, mock_requests, mock_websockets):
         request = RestRequest("https://example.com", "GET")
 
