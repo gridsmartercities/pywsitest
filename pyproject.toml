@@ -1,0 +1,48 @@
+[project]
+name = "pywsitest"
+version = "0.4.0"
+description = "PYthon WebSocket Integration TESTing framework"
+author = "Grid Smarter Cities"
+license = "MIT"
+readme = "README.md"
+python = "^3.7"
+requires = ["poetry_core>=1.0.0"]
+repository = "https://github.com/gridsmartercities/pywsitest"
+keywords = ["websocket integration test testing"]
+classifiers=[
+      "Intended Audience :: Developers",
+      "Development Status :: 3 - Alpha",
+      "Programming Language :: Python :: 3",
+      "License :: OSI Approved :: MIT License",
+      "Operating System :: OS Independent",
+      "Natural Language :: English"
+  ]
+packages = [
+    {exclude ="tests"}
+    ]
+
+[dependencies]
+prospector = "^1.5.1"
+coverage = "^6.0.1"
+bandit = "^1.7.0"
+pylint_quotes = "^0.2.3"
+websockets = "^10.0"
+requests ="^2.26.0"
+
+poetry = "poetry.console:run"
+
+[tool.poetry]
+name = "pywsitest"
+version = "0.4.1"
+description = "PYthon WebSocket Integration TESTing framework"
+authors = ["Grid Smarter Cities"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+requests = "^2.26.0"
+websockets = "^10.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
