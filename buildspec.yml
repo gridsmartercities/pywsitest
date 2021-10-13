@@ -1,18 +1,10 @@
 version: 0.2
-
+env:
 phases:
   install:
     runtime-versions:
       python: 3.7
-      nodejs: 10
     commands:
-      # Give execute permissions to all build scripts
-      - chmod +x ./tools/*.sh
-      # Set an alias to the update-commit-status, which creates commit statuses in GitHub
-      - TAG="./tools/update-commit-status.sh"
-      # Install Hub CLI for GitHub
-      - ./tools/hub-installer.sh && PATH=$PATH:/opt/tools/hub/bin
-
       - pip install --upgrade pip
       - pip install -q bandit coverage==4.5.4 schema pylint_quotes prospector==1.3.1
       - pip install -r requirements.txt
@@ -20,22 +12,12 @@ phases:
       - poetry install
   pre_build:
     commands:
-      # Disable tests log info and error messages
       - export LOG_LEVEL=CRITICAL
-       # Running all prospector tools for code quality analysis
-      - $TAG "Prospector checks" "prospector"
-      # Running bandit for security testing
-      - $TAG "Bandit tests" "bandit -r -q ."
-      # Running all unittests
-      - $TAG "Unit tests" "coverage run --source="." -m unittest"
-      # Checking that the code is 100% covered by unit tests
-      - $TAG "Coverage check" "coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,setup.py"
-
       - export OUR_COMMIT_SHA=`git rev-parse HEAD`
-#      - bandit -r .
-#      - prospector
-#      - coverage run --source="." -m unittest
-#      - coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,setup.py
+      - bandit -r .
+      - prospector
+      - coverage run --source="." -m unittest
+      - coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,setup.py
   build:
     commands:
       - echo Running Tests
