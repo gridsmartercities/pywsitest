@@ -1,4 +1,9 @@
 version: 0.2
+env:
+  variables:
+    BRANCH_NAME: "automate-test"
+    GIT_REPO: "https://github.com/gridsmartercities/pywsitest/tree/automate-test"
+    VERSION: ""
 phases:
   install:
     runtime-versions:
@@ -23,8 +28,10 @@ phases:
       - coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,setup.py
   build:
     commands:
-      # bumps up version ie: 0.4.0 to 0.4.1
-      - poetry version patch
+      # bumps up version ie: 0.4.0 to specified build number
+      - echo $VERSION
+      - tools/git_tag.sh
+      - poetry version $VERSION
       # builds the source and wheels archives
       - poetry build
 
