@@ -229,6 +229,7 @@ class WSTest:  # noqa: pylint - too-many-instance-attributes
         self.requests.append(request)
         return self
 
+    # pylint:disable=no-member
     async def run(self):
         """
         Runs the integration tests
