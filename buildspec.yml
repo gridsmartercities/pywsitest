@@ -28,11 +28,7 @@ phases:
       # builds the source and wheels archives
       - poetry build
 
-  post-build:
+  post_build:
     commands:
       # publishes the package to pypi
       - poetry publish --dry-run
-
-  artifacts:
-    files:
-      - ./**/*
