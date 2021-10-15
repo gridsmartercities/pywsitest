@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pywsitest"
-version = "0.4.0"
+version = "0.3.4"
 description = "PYthon WebSocket Integration TESTing framework"
 authors = ["Grid Smarter Cities"]
 license = "MIT"
