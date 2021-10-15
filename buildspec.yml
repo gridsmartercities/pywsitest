@@ -17,6 +17,8 @@ phases:
       - poetry update
       # installs the dependencies based on poetry lock
       - poetry install
+      # Give execute permissions to all build scripts
+      - chmod +x ./tools/*.sh
   pre_build:
     commands:
       - export LOG_LEVEL=CRITICAL
