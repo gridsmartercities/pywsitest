@@ -2,8 +2,9 @@ version: 0.2
 env:
   variables:
     BRANCH_NAME: "automate-test"
-    GIT_REPO: "https://github.com/gridsmartercities/pywsitest/tree/automate-test"
-    VERSION: ""
+    GITHUB_OWNER: "/opensource-libs/build/GITHUB_OWNER"
+    GITHUB_REPO: "/opensource-libs/build/GITHUB_REPO"
+    GITHUB_TOKEN: "/opensource-libs/build/GITHUB_TOKEN"
 phases:
   install:
     runtime-versions:
