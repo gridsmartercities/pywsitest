@@ -25,6 +25,7 @@ phases:
       - export LOG_LEVEL=CRITICAL
       - export OUR_COMMIT_SHA=`git rev-parse HEAD`
       - echo Running Tests
+      - echo $GITHUB_OWNER
       - bandit -r .
       - prospector
       - coverage run --source="." -m unittest
