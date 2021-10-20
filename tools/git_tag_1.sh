@@ -5,6 +5,7 @@ version=$(awk -F'[ ="]+' '$1 == "version" { print $2 }' pyproject.toml)
 version=$(echo v$version)
 #echo $version
 #GITHUB_REPO=pywsitest/tree/automate-test
+git checkout automate
 git tag "${version}"
 git log origin/master
 echo $(git remote -v)
