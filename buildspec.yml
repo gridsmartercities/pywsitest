@@ -2,9 +2,11 @@ version: 0.2
 env:
   variables:
     BRANCH_NAME: "automate-test"
-    GITHUB_OWNER: "/opensource-libs/build/GITHUB_OWNER"
-    GITHUB_REPO: "/opensource-libs/build/GITHUB_REPO"
-    GITHUB_TOKEN: "/opensource-libs/build/GITHUB_TOKEN"
+    GITHUB_OWNER: "/pywsitest/build/GITHUB_OWNER"
+    GITHUB_REPO: "/pywsitest/build/GITHUB_REPO"
+    GITHUB_TOKEN: "/pywsitest/build/GITHUB_TOKEN"
+    PYPI_TOKEN: "/pywsitest/build/PYPI_TOKEN"
+    PYPI_NAME: "/pywsitest/build/PYPI_NAME"
 phases:
   install:
     runtime-versions:
