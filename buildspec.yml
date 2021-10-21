@@ -42,6 +42,6 @@ phases:
   post_build:
     commands:
       # adds new git tag based on pyproject.toml version
-      - tools/git_tag_1.sh
+#      - tools/git_tag_1.sh
       # publishes the package to pypi
-#      - poetry publish --dry-run
+      - poetry publish --username PYPI_NAME --password PYPI_TOKEN --dry-run
