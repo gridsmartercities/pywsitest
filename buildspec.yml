@@ -43,5 +43,7 @@ phases:
     commands:
       # adds new git tag based on pyproject.toml version
 #      - tools/git_tag_1.sh
+      # publishes the package to git
+      - poetry publish -r git --username GITHUB_OWNER --password GITHUB_TOKEN --dry-run
       # publishes the package to pypi
-      - poetry publish --username PYPI_NAME --password PYPI_TOKEN --dry-run
+      - poetry publish -r testpypi --username PYPI_NAME --password PYPI_TOKEN --dry-run
