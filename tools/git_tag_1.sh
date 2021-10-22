@@ -2,6 +2,8 @@
 
 set -eu
 
+export GITHUB_TOKEN="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"
+
 git config --global user.name Miriam
 git config --global user.email not.miriam@gird.dev
 
