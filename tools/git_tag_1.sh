@@ -5,6 +5,8 @@ set -eu
 hub config --global user.name Miriam
 hub config --global user.email not.miriam@gird.dev
 
+hub clone git@github.com:gridsmartercities/pywsitest.git pywsitest
+cd pywsitest
 
 hub tag -a -m "Miriam to the resque" 1.4.8
 hub push origin 1.4.8
