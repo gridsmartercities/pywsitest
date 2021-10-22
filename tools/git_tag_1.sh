@@ -5,6 +5,9 @@ set -eu
 hub config --global user.name Miriam
 hub config --global user.email not.miriam@gird.dev
 
+ls
+pwd
+
 hub clone git@github.com:gridsmartercities/pywsitest.git pywsitest
 cd pywsitest
 
