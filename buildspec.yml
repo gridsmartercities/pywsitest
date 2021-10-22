@@ -16,13 +16,6 @@ phases:
       - pip install -q bandit coverage==4.5.4 schema pylint_quotes prospector==1.3.1
       - pip install -r requirements.txt
       - pip install poetry
-      - # updates the dependencies and sets in poetry lock
-      - poetry update
-      # configuring repositories
-      - poetry config repositories.git https://github.com/gridsmartercities/pywsitest
-      - poetry config repositories.testpypi https://test.pypi.org/legacy/
-      # installs the dependencies based on poetry lock
-      - poetry install
       # Give execute permissions to all build scripts
       - chmod +x ./tools/*.sh
   pre_build:
@@ -35,21 +28,28 @@ phases:
       - prospector
       - coverage run --source="." -m unittest
       - coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,setup.py
+       # checks the structure of pyproject.toml
       - poetry check
+      - # updates the dependencies and sets in poetry lock
+      - poetry update
+      # configuring repositories
+      - poetry config repositories.git https://github.com/gridsmartercities/pywsitest
+      - poetry config repositories.testpypi https://test.pypi.org/legacy/
+      # installs the dependencies based on poetry lock
+      - poetry install
+
   build:
     commands:
       # bumps up version ie: 0.4.0 to specified build number
 #      - poetry version $VERSION
       # builds the source and wheels archives
       - poetry build
-
       # publishes the package to git
-      - poetry publish -r git --username GITHUB_OWNER --password GITHUB_TOKEN --dry-run
+      - poetry publish -r git --username GITHUB_OWNER --password GITHUB_TOKEN
      # adds new git tag based on pyproject.toml version
 #      - tools/git_tag_1.sh
 
   post_build:
     commands:
-
       # publishes the package to pypi
       - poetry publish -r testpypi --username PYPI_NAME --password PYPI_TOKEN --dry-run

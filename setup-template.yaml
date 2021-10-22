@@ -154,5 +154,5 @@ Resources:
             Type: OAUTH
           Location: !Sub https://github.com/${GitHubOwner}/${GitHubRepo}.git
           Type: GITHUB
-          BuildSpec: buildspec.yaml
+          BuildSpec: buildspec.yml
         TimeoutInMinutes: 20
