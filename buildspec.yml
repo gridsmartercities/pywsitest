@@ -1,10 +1,6 @@
 version: 0.2
 env:
   variables:
-    BRANCH_NAME: "automate-test"
-    GITHUB_OWNER: "/pywsitest/build/GITHUB_OWNER"
-    GITHUB_REPO: "/pywsitest/build/GITHUB_REPO"
-    GITHUB_TOKEN: "/pywsitest/build/GITHUB_TOKEN"
     PYPI_TOKEN: "/pywsitest/build/PYPI_TOKEN"
     PYPI_NAME: "/pywsitest/build/PYPI_NAME"
 phases:
@@ -22,9 +18,7 @@ phases:
   pre_build:
     commands:
       - export LOG_LEVEL=CRITICAL
-      - export OUR_COMMIT_SHA=`git rev-parse HEAD`
       - echo Running Tests
-      - echo $GITHUB_OWNER
       - bandit -r .
       - prospector
       - coverage run --source="." -m unittest
@@ -44,8 +38,6 @@ phases:
       - poetry build
       # checks the dist/*
       - twine check dist/*
-     # adds new git tag based on pyproject.toml version
-#      - tools/git_tag_1.sh
 
   post_build:
     commands:
