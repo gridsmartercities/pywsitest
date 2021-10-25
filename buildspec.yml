@@ -33,19 +33,16 @@ phases:
       - # updates the dependencies and sets in poetry lock
       - poetry update
       # configuring repositories
-      - poetry config repositories.git https://github.com/gridsmartercities/pywsitest
       - poetry config repositories.testpypi https://test.pypi.org/legacy/
       # installs the dependencies based on poetry lock
       - poetry install
 
   build:
     commands:
-      # bumps up version ie: 0.4.0 to specified build number
-#      - poetry version $VERSION
       # builds the source and wheels archives
       - poetry build
-      # publishes the package to git
-#      - poetry publish -r git --username GITHUB_OWNER --password GITHUB_TOKEN
+      # checks the dist/*
+      - twine check dist/*
      # adds new git tag based on pyproject.toml version
 #      - tools/git_tag_1.sh
 
