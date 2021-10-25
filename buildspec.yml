@@ -16,6 +16,7 @@ phases:
       - pip install -q bandit coverage==4.5.4 schema pylint_quotes prospector==1.3.1
       - pip install -r requirements.txt
       - pip install poetry
+      - pip install twine
       # Give execute permissions to all build scripts
       - chmod +x ./tools/*.sh
   pre_build:
