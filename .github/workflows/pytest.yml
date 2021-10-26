@@ -43,15 +43,16 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: |
           pipenv run build
-      - name: package-version
-        run: node -p -e '`PACKAGE_VERSION=${require("./setup.py").version}`' >> $GITHUB_ENV
+      - name: Read version
+        id: getversion
+        run: echo "::set-output name=version::$(awk -F'[ ="]+' '$1 == "version" { print $2 }' ./setup.py)"
 
       - name: package-version-to-git-tag
         uses: pkgdeps/git-tag-action@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           github_repo: ${{ github.repository }}
-          version: ${{ env.PACKAGE_VERSION }}
+          version: ${{ steps.getversion.outputs.version  }}
           git_commit_sha: ${{ github.sha }}
           git_tag_prefix: "v"
       - name: Publish distribution 📦 to Test PyPI
