@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 LONG_DESCRIPTION = open("README.md").read()
 
-setup(name="MIG",
+setup(name="miriam_is_goddess",
       version="0.20",
       description="What?",
       long_description=LONG_DESCRIPTION,
