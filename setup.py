@@ -18,7 +18,7 @@ setup(name="MIG",
           "Programming Language :: Python :: 3",
           "License :: OSI Approved :: MIT License",
           "Operating System :: OS Independent",
-          "Natural Language :: Geordie"
+          "Natural Language :: English"
       ],
       keywords="websocket integration test testing",
       packages=find_packages(exclude=("tests",)),
