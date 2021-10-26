@@ -1,5 +1,5 @@
 [[source]]
-url = "https://pypi.org/miriam_and_fil_test"
+url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
@@ -14,9 +14,16 @@ tqdm = "*"
 pre-commit = "*"
 commitizen = "*"
 toml = "*"
+prospector = "*"
+coverage = "*"
+bandit = "*"
+pylint_quotes = "*"
+websockets = "*"
+requests = "*"
+
 
 [requires]
-python_version = "3.10"
+python_version = "3.7"
 
 [scripts]
 test = "pytest"
