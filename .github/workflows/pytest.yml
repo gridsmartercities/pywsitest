@@ -3,7 +3,7 @@ name: Publish 🐍 distributions 📦 to PyPI
 on:
   push:
     branches:
-      - ga_test
+      - automate-test
 jobs:
   build-and-publish:
     name: Build and publish 🐍 distributions 📦 to PyPI
@@ -31,9 +31,33 @@ jobs:
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           pipenv install --deploy --dev
+
+      - name: Bump Versions
+        uses: michmich112/version-bumper@master
+        with:
+          scheme: semantic
+          version-file: "./setup.py"
+          files: "[]"
+          rules: '[{"trigger":"commit","bump":"build"}, {"trigger":"commit","branch":"release","bump":"major", "reset":["minor","build"]}]'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build a binary wheel and a source tarball
         run: |
           pipenv run build
+      - name: package-version
+        run: node -p -e '`PACKAGE_VERSION=${require("./setup.py").version}`' >> $GITHUB_ENV
+
+      - name: package-version-to-git-tag
+        uses: pkgdeps/git-tag-action@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_repo: ${{ github.repository }}
+          version: ${{ env.PACKAGE_VERSION }}
+          git_commit_sha: ${{ github.sha }}
+          git_tag_prefix: "v"
+      - name: Publish distribution 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.Test_PYPI_API_TOKEN }}
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
