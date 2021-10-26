@@ -3,14 +3,14 @@ from setuptools import setup, find_packages
 
 LONG_DESCRIPTION = open("README.md").read()
 
-setup(name="pywsitest",
-      version="0.3.3",
-      description="PYthon WebSocket Integration TESTing framework",
+setup(name="MIG",
+      version="0.20",
+      description="What?",
       long_description=LONG_DESCRIPTION,
       long_description_content_type="text/markdown",
-      url="https://github.com/gridsmartercities/pywsitest",
-      author="Grid Smarter Cities",
-      author_email="open-source@gridsmartercities.com",
+      url="https://miriam.com/",
+      author="Miriam",
+      author_email="kerb-delivery-development@gridsmartercities.com",
       license="MIT",
       classifiers=[
           "Intended Audience :: Developers",
@@ -18,7 +18,7 @@ setup(name="pywsitest",
           "Programming Language :: Python :: 3",
           "License :: OSI Approved :: MIT License",
           "Operating System :: OS Independent",
-          "Natural Language :: English"
+          "Natural Language :: Geordie"
       ],
       keywords="websocket integration test testing",
       packages=find_packages(exclude=("tests",)),
