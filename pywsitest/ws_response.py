@@ -75,7 +75,7 @@ class WSResponse:
         Returns:
             (bool): True if the response matches based on the attributes
         """
-        for key in self.attributes:
+        for key in self.attributes.items():
             resolved_values = get_resolved_values(response, key)
 
             if not resolved_values:
