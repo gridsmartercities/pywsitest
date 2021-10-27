@@ -32,21 +32,6 @@ jobs:
         run: |
           pipenv install --deploy --dev
 
-#      - name: Security check - Bandit
-#        uses: ./
-#        with:
-#          python_version: ${{ matrix.python-version }}
-#          project_path: .
-#
-#      - name: Running Prospector
-#        uses: jpetrucciani/prospector-check@master
-      - name: Running tests
-        run: |
-          pip install -q bandit coverage==4.5.4 schema pylint_quotes prospector==1.3.1
-          bandit -r .
-          coverage run --source="." -m unittest
-          coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,setup.py
-
       - name: Bump build version
         uses: michmich112/version-bumper@master
         with:

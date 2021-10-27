@@ -1,45 +1,14 @@
 version: 0.2
-env:
-  variables:
-    PYPI_TOKEN: "/pywsitest/build/PYPI_TOKEN"
-    PYPI_NAME: "/pywsitest/build/PYPI_NAME"
+
 phases:
   install:
     runtime-versions:
       python: 3.7
     commands:
-      - pip install --upgrade pip
-      - pip install -q bandit coverage==4.5.4 schema pylint_quotes prospector==1.3.1
       - pip install -r requirements.txt
-      - pip install poetry
-      - pip install twine
-      # Give execute permissions to all build scripts
-      - chmod +x ./tools/*.sh
   pre_build:
     commands:
-      - export LOG_LEVEL=CRITICAL
-      - echo Running Tests
       - bandit -r .
       - prospector
       - coverage run --source="." -m unittest
       - coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,setup.py
-       # checks the structure of pyproject.toml
-      - poetry check
-      - # updates the dependencies and sets in poetry lock
-      - poetry update
-      # configuring repositories
-      - poetry config repositories.testpypi https://test.pypi.org/legacy/
-      # installs the dependencies based on poetry lock
-      - poetry install
-
-  build:
-    commands:
-      # builds the source and wheels archives
-      - poetry build
-      # checks the dist/*
-      - twine check dist/*
-
-  post_build:
-    commands:
-      # publishes the package to pypi
-      - poetry publish -r testpypi --username PYPI_NAME --password PYPI_TOKEN --dry-run
