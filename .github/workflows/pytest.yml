@@ -31,36 +31,33 @@ jobs:
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           pipenv install --deploy --dev
+      - name: Running tests
+        run: |
+          bandit -r .
+          prospector
+          coverage run --source="." -m unittest
+          coverage report -m --fail-under=100 --omit=*/__init__.py,tests/*,setup.py
 
-      - name: Bump Versions
+      - name: Bump build version
         uses: michmich112/version-bumper@master
         with:
           scheme: semantic
           version-file: "./setup.py"
           files: "[]"
-          rules: '[{"trigger":"commit","bump":"build"}, {"trigger":"commit","branch":"release","bump":"major", "reset":["minor","build"]}]'
+          rules: '[{"trigger":"commit","bump":"build"}, {"trigger":"commit","branch":"master","bump":"major", "reset":["minor","build"]}]'
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build a binary wheel and a source tarball
         run: |
           pipenv run build
-#      - name: Read version
-#        id: getversion
-#        run: echo '::set-output name=version::$(awk -F'[ ="]+' '$1 == "version" { print $2 }' ./setup.py)'
-      - name: Bump version and push tag
+
+      - name: Bump version and push git tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.6
         with:
-          tag_prefix: "v"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-#      - name: package-version-to-git-tag
-#        uses: pkgdeps/git-tag-action@v2
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          github_repo: ${{ github.repository }}
-#          version: ${{ steps.getversion.outputs.version  }}
-#          git_commit_sha: ${{ github.sha }}
-#          git_tag_prefix: "v"
-      - name: Release
+
+      - name: Github Release
         uses: fnkr/github-action-ghr@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
