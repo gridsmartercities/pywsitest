@@ -31,8 +31,18 @@ jobs:
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           pipenv install --deploy --dev
+
+#      - name: Security check - Bandit
+#        uses: ./
+#        with:
+#          python_version: ${{ matrix.python-version }}
+#          project_path: .
+#
+#      - name: Running Prospector
+#        uses: jpetrucciani/prospector-check@master
       - name: Running tests
         run: |
+          pip install -q bandit coverage==4.5.4 schema pylint_quotes prospector==1.3.1
           bandit -r .
           prospector
           coverage run --source="." -m unittest
