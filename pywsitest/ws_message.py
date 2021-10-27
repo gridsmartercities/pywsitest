@@ -70,7 +70,7 @@ class WSMessage:
         Returns:
             (WSMessage): The WSMessage instance resolve was called on
         """
-        for key in self.attributes:
+        for key in self.attributes.items():
             value = self.attributes[key]
             match = PATH_REGEX.match(str(value))
             if match:

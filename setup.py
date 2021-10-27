@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-LONG_DESCRIPTION = open("README.md").read()
+LONG_DESCRIPTION = open("README.md").read()  # pylint:disable=unspecified-encoding,consider-using-with
 
 setup(name="miriam_is_goddess",
       version="0.20.0",
