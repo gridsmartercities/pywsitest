@@ -25,8 +25,6 @@ requests = "*"
 
 [requires]
 python_version = "3.7"
-requests = "2.26.0"
-websockets = "9.1"
 
 [scripts]
 test = "pytest"
