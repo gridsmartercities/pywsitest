@@ -3,7 +3,7 @@ name: Publish 🐍 distributions 📦 to PyPI
 on:
   push:
     branches:
-      - automate-test
+      - master
 jobs:
   build-and-publish:
     name: Build and publish 🐍 distributions 📦 to PyPI
@@ -57,17 +57,18 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
 
-      - name: Github Release
+      - name: Github upload
         uses: fnkr/github-action-ghr@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GHR_PATH: dist/
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
-#      - name: Publish distribution 📦 to Test PyPI
-#        uses: pypa/gh-action-pypi-publish@master
-#        with:
-#          password: ${{ secrets.Test_PYPI_API_TOKEN }}
+
+      - name: Publish distribution 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.Test_PYPI_API_TOKEN }}
+
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
