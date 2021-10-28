@@ -39,31 +39,31 @@ jobs:
           scheme: semantic
           version-file: "./setup.py"
           files: "[]"
-          rules: '[{"trigger":"commit","branch":"master","bump":"build"}]'
+          rules: '[{"trigger":"commit","bump":"build"},{"trigger":"commit","branch":"master","bump":"build"}]'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build a binary wheel and a source tarball
         run: |
           pipenv run build
-      # git tag without branch suffix is created for master
-      - name: Bump git tag version
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v5.6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.tag_version.outputs.changelog }}
-
-      - name: Github upload
-        uses: fnkr/github-action-ghr@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GHR_PATH: dist/
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      # git tag without branch suffix is created for master
+#      - name: Bump git tag version
+#        id: tag_version
+#        uses: mathieudutour/github-tag-action@v5.6
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Create a GitHub release
+#        uses: ncipollo/release-action@v1
+#        with:
+#          tag: ${{ steps.tag_version.outputs.new_tag }}
+#          name: Release ${{ steps.tag_version.outputs.new_tag }}
+#          body: ${{ steps.tag_version.outputs.changelog }}
+#
+#      - name: Github upload
+#        uses: fnkr/github-action-ghr@v1
+#        if: startsWith(github.ref, 'refs/tags/')
+#        env:
+#          GHR_PATH: dist/
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish distribution 📦 to Test PyPI
         run: |
