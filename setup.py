@@ -3,14 +3,14 @@ from setuptools import setup, find_packages
 
 LONG_DESCRIPTION = open("README.md").read()  # pylint:disable=unspecified-encoding,consider-using-with
 
-setup(name="pywsitest",
-      version="0.3.3",
-      description="PYthon WebSocket Integration TESTing framework",
+setup(name="miriam_is_goddess",
+      version="0.20.0",
+      description="What?",
       long_description=LONG_DESCRIPTION,
       long_description_content_type="text/markdown",
-      url="https://github.com/gridsmartercities/pywsitest",
-      author="Grid Smarter Cities",
-      author_email="open-source@gridsmartercities.com",
+      url="https://miriam.com/",
+      author="Miriam",
+      author_email="kerb-delivery-development@gridsmartercities.com",
       license="MIT",
       classifiers=[
           "Intended Audience :: Developers",
@@ -28,4 +28,3 @@ setup(name="pywsitest",
       ],
       zip_safe=False,
       python_requires=">=3.7")
-
