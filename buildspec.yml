@@ -52,4 +52,4 @@ phases:
     commands:
 
       # publishes the package to pypi
-      - poetry publish -r testpypi --username PYPI_NAME --password PYPI_TOKEN --dry-run
+      - poetry publish -r testpypi --username PYPI_NAME --password PYPI_TOKEN
