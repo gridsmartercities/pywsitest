@@ -67,8 +67,8 @@ jobs:
 
       - name: Publish distribution 📦 to Test PyPI
         run: |
-          python3 setup.py sdist bdist_wheel
-          python3 -m twine upload dist/*
+          pipenv run build
+          pipenv run deploy
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
