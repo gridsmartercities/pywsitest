@@ -38,7 +38,7 @@ jobs:
           scheme: semantic
           version-file: "./setup.py"
           files: "[]"
-          rules: '[{"trigger":"commit","branch":"master","bump":"minor", "reset":["build"]}]'
+          rules: '[{"trigger":"commit","branch":"master","bump":"build"}]'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build a binary wheel and a source tarball
