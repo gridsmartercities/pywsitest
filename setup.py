@@ -28,3 +28,4 @@ setup(name="miriam_is_goddess",
       ],
       zip_safe=False,
       python_requires=">=3.7")
+
