@@ -5,7 +5,7 @@ LONG_DESCRIPTION = open("README.md").read()  # pylint:disable=unspecified-encodi
 
 setup(name="pywsitest",
       version="0.3.3",
-      description="Ython WebSocket Integration TESTing framework",
+      description="PYthon WebSocket Integration TESTing framework",
       long_description=LONG_DESCRIPTION,
       long_description_content_type="text/markdown",
       url="https://github.com/gridsmartercities/pywsitest",
