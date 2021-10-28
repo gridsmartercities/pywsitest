@@ -10,7 +10,7 @@ setup(name="miriam_is_goddess",
       long_description_content_type="text/markdown",
       url="https://miriam.com/",
       author="Miriam",
-      author_email="kerb-delivery-development@gridsmartercities.com",
+      author_email="miriam.thomas@gridsmartercities.com",
       license="MIT",
       classifiers=[
           "Intended Audience :: Developers",
