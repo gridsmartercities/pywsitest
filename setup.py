@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 LONG_DESCRIPTION = open("README.md").read()  # pylint:disable=unspecified-encoding,consider-using-with
 
 setup(name="miriam_is_not_goddess",
-      version="0.20.3",
+      version="0.20.4",
       description="What?",
       long_description=LONG_DESCRIPTION,
       long_description_content_type="text/markdown",
