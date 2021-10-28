@@ -31,6 +31,7 @@ jobs:
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           pipenv install --deploy --dev
+          python3 -m pip install setuptools wheel twine
       # version gets minor bump for master push
       - name: Bump package build version
         uses: michmich112/version-bumper@master
