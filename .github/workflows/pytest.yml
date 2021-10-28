@@ -65,24 +65,24 @@ jobs:
 #          GHR_PATH: dist/
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#      - name: Publish distribution 📦 to Test PyPI
-#        run: |
-#          pipenv run build
-#          pipenv run deploy
-#        env:
-#          TWINE_USERNAME: __token__
-#          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
-#          TWINE_REPOSITORY: testpypi
-
-#      - name: Publish distribution 📦 to PyPI
-#        run: |
-#          pipenv run build
-#          pipenv run deploy
-#        env:
-#          TWINE_USERNAME: __token__
-#          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Publish distribution 📦 to Test PyPI
+        run: |
+          pipenv run build
+          pipenv run deploy
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          TWINE_REPOSITORY: testpypi
 
       - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          pipenv run build
+          pipenv run deploy
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+
+#      - name: Publish distribution 📦 to PyPI
+#        uses: pypa/gh-action-pypi-publish@master
+#        with:
+#          password: ${{ secrets.PYPI_API_TOKEN }}
