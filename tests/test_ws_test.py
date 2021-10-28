@@ -23,6 +23,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
     @patch("websockets.connect")
     @patch("ssl.SSLContext")
     @syncify
+    # pylint:disable=no-self-use
     async def test_whitespace_is_stripped_from_uri_on_connect(self, mock_ssl, mock_websockets):
         ws_tester = WSTest("\n wss://example.com \n")
 
@@ -44,6 +45,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
     @patch("websockets.connect")
     @patch("ssl.SSLContext")
     @syncify
+    # pylint:disable=no-self-use
     async def test_whitespace_is_stripped_from_uri_with_query_parameter_on_connect(self, mock_ssl, mock_websockets):
         ws_tester = (
             WSTest("\n wss://example.com \n")
@@ -88,6 +90,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
     @patch("websockets.connect")
     @patch("ssl.SSLContext")
     @syncify
+    # pylint:disable=no-self-use
     async def test_websocket_connect(self, mock_ssl, mock_websockets):
         ws_tester = WSTest("wss://example.com")
 
@@ -108,6 +111,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
 
     @patch("websockets.connect")
     @syncify
+    # pylint:disable=no-self-use
     async def test_websocket_connect_unsecured(self, mock_websockets):
         ws_tester = WSTest("ws://example.com")
 
@@ -126,6 +130,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
     @patch("websockets.connect")
     @patch("ssl.SSLContext")
     @syncify
+    # pylint:disable=no-self-use
     async def test_websocket_connect_with_parameters(self, mock_ssl, mock_websockets):
         ws_tester = (
             WSTest("wss://example.com")
@@ -153,6 +158,7 @@ class WSTestTests(unittest.TestCase):  # noqa: pylint - too-many-public-methods
     @patch("websockets.connect")
     @patch("ssl.SSLContext")
     @syncify
+    # pylint:disable=no-self-use
     async def test_websocket_connect_with_headers(self, mock_ssl, mock_websockets):
         ws_tester = (
             WSTest("wss://example.com")

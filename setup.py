@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-LONG_DESCRIPTION = open("README.md").read()
+LONG_DESCRIPTION = open("README.md").read()  # pylint:disable=unspecified-encoding,consider-using-with
 
 setup(name="pywsitest",
       version="0.3.3",
@@ -28,3 +28,4 @@ setup(name="pywsitest",
       ],
       zip_safe=False,
       python_requires=">=3.7")
+
