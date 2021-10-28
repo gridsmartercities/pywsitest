@@ -75,7 +75,8 @@ class WSResponse:
         Returns:
             (bool): True if the response matches based on the attributes
         """
-        for key in self.attributes.items():
+        # pylint:disable=consider-using-dict-items
+        for key in self.attributes:
             resolved_values = get_resolved_values(response, key)
 
             if not resolved_values:

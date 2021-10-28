@@ -38,7 +38,7 @@ jobs:
           scheme: semantic
           version-file: "./setup.py"
           files: "[]"
-          rules: '[{"trigger":"commit","bump":"build"}, {"trigger":"commit","branch":"master","bump":"major", "reset":["minor","build"]}]'
+          rules: '[{"trigger":"commit","branch":"master","bump":"major", "reset":["minor","build"]}]'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build a binary wheel and a source tarball
@@ -49,6 +49,7 @@ jobs:
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.6
         with:
+          append_to_pre_release_tag: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Github Release

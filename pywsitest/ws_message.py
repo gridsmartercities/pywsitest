@@ -70,7 +70,8 @@ class WSMessage:
         Returns:
             (WSMessage): The WSMessage instance resolve was called on
         """
-        for key in self.attributes.items():
+        # pylint:disable=consider-using-dict-items
+        for key in self.attributes:
             value = self.attributes[key]
             match = PATH_REGEX.match(str(value))
             if match:
