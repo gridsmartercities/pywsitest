@@ -1,4 +1,4 @@
-name: Publish 🐍 distributions 📦 to PyPI
+name: Publish miriam
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
         run: |
           pipenv run build
         git tag without branch suffix is created for master
-        - name: Bump git tag version
+      - name: Bump git tag version
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.6
         with:
