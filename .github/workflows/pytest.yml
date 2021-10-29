@@ -68,13 +68,12 @@ jobs:
       - name: Publish distribution 📦 to Test PyPI
         run: |
           pipenv run build
-          pipenv run deploy
+          pipenv run deploy --verbose
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
           TWINE_REPOSITORY: testpypi
-        with:
-          verbose: true
+
 
 #      - name: Publish distribution 📦 to PyPI
 #        run: |
