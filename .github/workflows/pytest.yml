@@ -42,9 +42,9 @@ jobs:
 #          rules: '[{"trigger":"commit","branch":"master","bump":"build"}]'
 #          github-token: ${{ secrets.GITHUB_TOKEN }}
 #
-#      - name: Build a binary wheel and a source tarball
-#        run: |
-#          pipenv run build
+      - name: Build a binary wheel and a source tarball
+        run: |
+          pipenv run build
 #      # git tag without branch suffix is created for master
 #      - name: Bump git tag version
 #        id: tag_version
