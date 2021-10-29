@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 LONG_DESCRIPTION = open("README.md").read()  # pylint:disable=unspecified-encoding,consider-using-with
 
 setup(name="pywsitest",
-      version="0.3.3",
+      version="0.30.3",
       description="PYthon WebSocket Integration TESTing framework",
       long_description=LONG_DESCRIPTION,
       long_description_content_type="text/markdown",
