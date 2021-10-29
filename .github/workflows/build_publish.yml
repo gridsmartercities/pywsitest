@@ -31,15 +31,6 @@ jobs:
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           pipenv install --deploy --dev
-      # version gets minor bump for master push
-      - name: Bump package build version
-        uses: michmich112/version-bumper@master
-        with:
-          scheme: semantic
-          version-file: "./setup.py"
-          files: "[]"
-          rules: '[{"trigger":"commit","branch":"master","bump":"build"}]'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build a binary wheel and a source tarball
         run: |
@@ -65,11 +56,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish distribution 📦 to Test PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: |
+          pipenv run build
+          pipenv run deploy
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          TWINE_REPOSITORY: testpypi
 
       - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          pipenv run build
+          pipenv run deploy
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
