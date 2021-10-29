@@ -64,15 +64,26 @@ jobs:
 #        env:
 #          GHR_PATH: dist/
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Publish distribution 📦 to Test PyPI
-        run: |
-          pipenv run build
-          pipenv run deploy --verbose
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          TWINE_REPOSITORY: testpypi
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        repository_url: https://test.pypi.org/legacy/
+      - name: Publish distribution 📦 to PyPI
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+
+#      - name: Publish distribution 📦 to Test PyPI
+#        run: |
+#          pipenv run build
+#          pipenv run deploy --verbose
+#        env:
+#          TWINE_USERNAME: __token__
+#          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+#          TWINE_REPOSITORY: testpypi
 
 
 #      - name: Publish distribution 📦 to PyPI
