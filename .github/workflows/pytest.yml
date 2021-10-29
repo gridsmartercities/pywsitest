@@ -34,7 +34,7 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: |
           pipenv run build
-        git tag without branch suffix is created for master
+#        git tag without branch suffix is created for master
       - name: Bump git tag version
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.6
