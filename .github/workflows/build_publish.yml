@@ -11,6 +11,13 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
+      - name: Fetch version
+        run: |
+          output="$(python setup.py --version)"
+          echo "::set-output name=version::$output"
+        id: setup_version
+      - name: Print build version
+        run: echo "${{ steps.setup_version.outputs.version }}"
 
       # Setup Python (faster than using Python container)
       - name: Setup Python
@@ -41,6 +48,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v5.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.setup_version.outputs.version }}
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
         with:
