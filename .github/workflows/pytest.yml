@@ -11,6 +11,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
+      - name: Fetch version
         run: |
           output="$(python setup.py --version)"
           echo "::set-output name=version::$output"
