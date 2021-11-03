@@ -40,9 +40,9 @@ jobs:
           file: setup.py
           tagFormat: version=${version},
         id: version_check_staging
-          - name:
-            run: |
-            echo "Version ${{steps.version_check_staging.outputs.releaseVersion}}"
+      - name:
+        run: |
+        echo "Version ${{steps.version_check_staging.outputs.releaseVersion}}"
 #        git tag without branch suffix is created for master
 #      - name: Bump git tag version
 #        id: tag_version
