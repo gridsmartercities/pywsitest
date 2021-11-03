@@ -31,23 +31,33 @@ jobs:
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           pipenv install --deploy --dev
-      - name: Build a binary wheel and a source tarball
-        run: |
-          pipenv run build
+#      - name: Build a binary wheel and a source tarball
+#        run: |
+#          pipenv run build
+      - name: Check Release Version
+        uses: thebongy/version-check@v1
+        with:
+          file: setup.py
+          tagFormat: version=${version},
+        id: version_check_staging
+          - name:
+            run: |
+            echo "Version ${{steps.version_check_staging.outputs.releaseVersion}}"
 #        git tag without branch suffix is created for master
-      - name: Bump git tag version
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v5.6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.tag_version.outputs.changelog }}
+#      - name: Bump git tag version
+#        id: tag_version
+#        uses: mathieudutour/github-tag-action@v5.6
+#        with:
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Create a GitHub release
+#        uses: ncipollo/release-action@v1
+#        with:
+#          tag: ${{ steps.tag_version.outputs.new_tag }}
+#          name: Release ${{ steps.tag_version.outputs.new_tag }}
+#          body: ${{ steps.tag_version.outputs.changelog }}
 
-      - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+#
+#      - name: Publish distribution 📦 to PyPI
+#        uses: pypa/gh-action-pypi-publish@master
+#        with:
+#          password: ${{ secrets.PYPI_API_TOKEN }}
