@@ -11,6 +11,12 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
+        run: |
+          output="$(python setup.py --version)"
+          echo "::set-output name=version::$output"
+        id: setup_version
+      - name: Print version
+        run: echo "${{steps.setup_version.outputs.version }}"
 
       # Setup Python (faster than using Python container)
       - name: Setup Python
@@ -34,7 +40,7 @@ jobs:
 #      - name: Build a binary wheel and a source tarball
 #        run: |
 #          pipenv run build
-      - name: Check Release Version
+      - name: Release Version
         uses: thebongy/version-check@v1
         with:
           file: setup.py
